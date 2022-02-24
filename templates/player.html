@@ -13,7 +13,11 @@
             src="../static/yeah/images/{{filepath}}/{{filename}}.mp4"></video>
     </div>
     </div>
-
+    <p class="text-center">
+        {% for tag in tags %}
+        <a href=../tag/{{tag.tag}} class="text-muted text-center">{{tag.tag}}</a>,
+        {% endfor %}
+    </p>
 
     {% include "./parts/bootstrap-js.html" %}
 </body>
