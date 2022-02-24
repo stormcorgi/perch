@@ -1,0 +1,28 @@
+<html>
+
+<head>
+    {% include "./parts/bootstrap-head.html" %}
+    <title>perch - web assistant for Eagle movie library</title>
+</head>
+
+<body>
+    {% include "./parts/header.html" %}
+    <h1 class=text-center>perch</h1>
+    <h6 class="text-muted text-center">- web assistant for Eagle movie library -</h6>
+    <div class="container">
+        <div class="row">
+            {% for actress in actresses %}
+            {% if loop.index % 4 == 0 %}
+        </div>
+        <div class="row">
+            {% else %}
+            <div class="col">
+                <a href="actress/{{actress.name}}">{{actress.name}}</a>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% include "./parts/bootstrap-js.html" %}
+</body>
+</html>

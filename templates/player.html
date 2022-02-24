@@ -1,0 +1,21 @@
+<head>
+    {% include "./parts/bootstrap-head.html" %}
+    <title>{{filename}} - perch</title>
+</head>
+
+<body>
+    {% include "./parts/header.html" %}
+    <a href="vlc://smb://192.168.10.110/share1/videos.library/images/{{filepath}}/{{filename}}.mp4">
+        <h3 class="text-center">{{filename}}</h3>
+    </a>
+    <div class="container">
+        <video controls width=100% poster="../static/yeah/images/{{filepath}}/{{filename}}_thumbnail.png"
+            src="../static/yeah/images/{{filepath}}/{{filename}}.mp4"></video>
+    </div>
+    </div>
+
+
+    {% include "./parts/bootstrap-js.html" %}
+</body>
+
+</html>

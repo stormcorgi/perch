@@ -1,0 +1,46 @@
+<html>
+
+<head>
+    {% include "./parts/bootstrap-head.html" %}
+    <title>{{actress.name}} - perch</title>
+</head>
+
+<body>
+    {% include "./parts/header.html" %}
+
+    <h3 class="text-center">{{actress.name}}</h3>
+    <div class="container">
+        <div class="row">
+            {% for movie in movies %}
+            {% if loop.index % 3 == 0 %}
+        </div>
+        <div class="row">
+            {% else %}
+            <div class="col">
+                <div class="thumbnail">
+                    <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
+                        <img class="img-rounded" style="width:100%"
+                            src="../static/yeah/images/{{movie.fileid}}.info/{{movie.filename}}_thumbnail.png">
+                    </a>
+                </div>
+                <p class="text-center">
+                    <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
+                        {{movie.filename}}
+                    </a>
+                </p>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <footer id="footer" class="fixed-bottom">
+        <div class="container">
+            <p class="text-muted text-right">ID:{{actress.actressid}}</p>
+        </div>
+    </footer>
+
+    {% include "./parts/bootstrap-js.html" %}
+</body>
+
+</html>
