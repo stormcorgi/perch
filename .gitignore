@@ -2,6 +2,6 @@ static
 __pycache__
 venv
 tmp
-mount_yeah.sh
 hls_dl.py
-download_javynow.sh
+*.sh
+perch.db
