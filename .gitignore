@@ -1,7 +1,5 @@
-static/yeah
+static/eagle_library
 __pycache__
-venv
-tmp
-hls_dl.py
+.venv
 *.sh
 perch.db
