@@ -20,7 +20,7 @@ pylint==2.12.2
 soupsieve==2.3.1
 SQLAlchemy==1.4.31
 toml==0.10.2
-typing_extensions==4.0.1
+typing_extensions==4.1.1
 Werkzeug==2.0.3
 wrapt==1.13.3
 zipp==3.7.0
