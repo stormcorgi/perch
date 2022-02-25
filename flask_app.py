@@ -1,8 +1,6 @@
 """ use flask and perchdb.py """
 from flask import render_template, Flask, request
-from perchdb import get_actresses, get_tags
-from perchdb import get_movies_by_actressid, get_movies_by_tag
-from perchdb import get_tags_by_movie, get_actressdata_by_name
+from perchdb import Actress, Movie, Tag
 
 app = Flask(__name__)
 
@@ -12,23 +10,23 @@ def rend_main():
     """render main page"""
     return render_template(
         "main.html",
-        actresses=get_actresses(),
-        tags=get_tags()
+        actresses=Actress.all(Actress),
+        tags=Tag.all(Tag)
     )
 
 
 @app.route("/actress/<name>")
 def rend_aectress(name):
     """render actress page"""
-    actress = get_actressdata_by_name(name)
-    movies = get_movies_by_actressid(actress.actressid)
+    actress = Actress.get_by_name(Actress, name)
+    movies = Movie.get_by_actress(Movie, actress.actressid)
     return render_template("actress.html", actress=actress, movies=movies)
 
 
 @app.route("/tag/<tag>")
 def rend_tag(tag):
     """render tag page"""
-    movies = get_movies_by_tag(tag)
+    movies = Movie.get_by_tag(Movie, tag)
     return render_template("tags.html", tag=tag, movies=movies)
 
 
@@ -39,7 +37,7 @@ def rend_player():
     fileid = request.args.get('id', default=None, type=str)
     filepath = fileid + ".info"
     filename = request.args.get('name', default=None, type=str)
-    tags = get_tags_by_movie(fileid)
+    tags = Tag.get_by_movie(Tag, fileid)
     return render_template(
         "player.html",
         filepath=filepath,
