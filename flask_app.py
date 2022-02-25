@@ -1,4 +1,4 @@
-# from webbrowser import get
+""" use flask and perchdb.py """
 from flask import render_template, Flask, request
 from perchdb import get_actresses, get_tags
 from perchdb import get_movies_by_actressid, get_movies_by_tag
@@ -8,7 +8,8 @@ app = Flask(__name__)
 
 
 @app.route("/")
-def main_page():
+def rend_main():
+    """render main page"""
     return render_template(
         "main.html",
         actresses=get_actresses(),
@@ -17,21 +18,24 @@ def main_page():
 
 
 @app.route("/actress/<name>")
-def actress(name):
+def rend_aectress(name):
+    """render actress page"""
     actress = get_actressdata_by_name(name)
     movies = get_movies_by_actressid(actress.actressid)
     return render_template("actress.html", actress=actress, movies=movies)
 
 
 @app.route("/tag/<tag>")
-def tag(tag):
+def rend_tag(tag):
+    """render tag page"""
     movies = get_movies_by_tag(tag)
     return render_template("tags.html", tag=tag, movies=movies)
 
 
 @app.route("/player")
 # http://192.168.10.110:8000/player?id=KYB&name=hogefuga
-def player():
+def rend_player():
+    """render player page"""
     fileid = request.args.get('id', default=None, type=str)
     filepath = fileid + ".info"
     filename = request.args.get('name', default=None, type=str)

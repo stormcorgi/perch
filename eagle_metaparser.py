@@ -1,12 +1,18 @@
+"""os,json for parse metadata.json"""
 import json
 import os
 
 
-def get_actress_name_id():  # returns {actressname : eagleid}
+def get_actress_name_id():
+    """returns {actressname: eagleid}"""
     actress_name_id = {}
 
-    with open('./static/eagle_library/metadata.json', 'r') as f:
-        json_meta = json.load(f)
+    with open(
+        './static/eagle_library/metadata.json',
+        'r',
+        encoding='utf-8'
+    ) as file:
+        json_meta = json.load(file)
         folders = json_meta["folders"]
         for folder in folders:
             # print(folder["name"])
@@ -19,21 +25,26 @@ def get_actress_name_id():  # returns {actressname : eagleid}
     return actress_name_id
 
 
-def get_all_tags():  # returns ["tag name itself"]
+def get_all_tags():
+    """returns ["tag name itself"]"""
     taglist = []
-    with open('./static/eagle_library/metadata.json', 'r') as f:
-        json_meta = json.load(f)
-        tagsGroups = json_meta["tagsGroups"]
-        for tg in tagsGroups:
-            taglist += tg["tags"]
+    with open(
+        './static/eagle_library/metadata.json',
+        'r',
+        encoding='utf-8'
+    ) as file:
+        json_meta = json.load(file)
+        tags_groups = json_meta["tagsGroups"]
+        for tag_group in tags_groups:
+            taglist += tag_group["tags"]
     return taglist
 
 
-# returns {fileid : filename}
 def get_file_metadata(dirpath):
-    p = dirpath + "/metadata.json"
-    with open(p, 'r') as f:
-        json_meta = json.load(f)
+    """returns {fileid : filename}"""
+    path = dirpath + "/metadata.json"
+    with open(path, 'r', encoding='utf-8') as file:
+        json_meta = json.load(file)
         metadata = {
             json_meta["id"]: {
                 "filename": json_meta["name"],
@@ -45,13 +56,14 @@ def get_file_metadata(dirpath):
 
 
 def get_all_file_metadatas():
+    """ scan every images folder and get each metadata """
     file_metadatas = []
-    p = "./static/eagle_library/images"
-    dirs = os.listdir(path=p)
-    for d in dirs:
-        if os.path.isdir(os.path.join(p, d)):
+    path = "./static/eagle_library/images"
+    dirs = os.listdir(path=path)
+    for tdir in dirs:
+        if os.path.isdir(os.path.join(path, tdir)):
             try:
-                targetpath = "./static/eagle_library/images/" + d
+                targetpath = "./static/eagle_library/images/" + tdir
                 file_metadatas.append(get_file_metadata(targetpath))
             except json.decoder.JSONDecodeError:
                 pass
