@@ -152,7 +152,7 @@ def update_files():
             for fileid, item in lst.items():
                 update_tags(session, fileid, item)
 
-                # FIXME each actressid, put movie record. strange SQL usage?
+                # TODO each actressid, put movie record. strange SQL usage?
                 for i in item["actressid"]:
                     # if data is already exist(fileid AND actressid), pass
                     movs = session.query(Movie).filter(
