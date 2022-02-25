@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, String, Integer
 from sqlalchemy import distinct
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from eagle_metaparser import *
+from eagle_metaparser import get_actress_name_id, get_all_file_metadatas
 
 engine = create_engine('sqlite:///perch.db')
 Base = declarative_base()
@@ -22,12 +22,13 @@ class Actress(Base):
 class Movie(Base):
     __tablename__ = 'movie'
     id = Column(Integer, primary_key=True, unique=True)
-    fileid = Column(String)
     filename = Column(String)
+    fileid = Column(String)
     actressid = Column(String)
 
     def __repr__(self):
-        return "Movie<{},{},{}>".format(self.id, self.filename, self.fileid, self.actressid)
+        return "Movie<{},{},{},{}>".format(
+            self.id, self.filename, self.fileid, self.actressid)
 
 
 class Tag(Base):

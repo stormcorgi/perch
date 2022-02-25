@@ -1,14 +1,19 @@
-from webbrowser import get
-from flask import *
-from perchdb import *
-import subprocess
+# from webbrowser import get
+from flask import render_template, Flask, request
+from perchdb import get_actresses, get_tags
+from perchdb import get_movies_by_actressid, get_movies_by_tag
+from perchdb import get_tags_by_movie, get_actressdata_by_name
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def main_page():
-    return render_template("main.html", actresses=get_actresses(), tags=get_tags())
+    return render_template(
+        "main.html",
+        actresses=get_actresses(),
+        tags=get_tags()
+    )
 
 
 @app.route("/actress/<name>")
@@ -31,7 +36,12 @@ def player():
     filepath = fileid + ".info"
     filename = request.args.get('name', default=None, type=str)
     tags = get_tags_by_movie(fileid)
-    return render_template("player.html", filepath=filepath, filename=filename, tags=tags)
+    return render_template(
+        "player.html",
+        filepath=filepath,
+        filename=filename,
+        tags=tags
+    )
 
 
 if __name__ == "__main__":
