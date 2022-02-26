@@ -1,4 +1,12 @@
 app/static/eagle_library
+tests/sample.library/backup
+tests/sample.library/actions.json
+tests/sample.library/Icon*
+tests/sample.library/mtime.json
+tests/sample.library/saved-filters.json
+tests/sample.library/tags.json
+tests/sample.library/images/*/*.png
+tests/sample.library/images/*/*.jpg
 __pycache__
 .venv
 *.sh
