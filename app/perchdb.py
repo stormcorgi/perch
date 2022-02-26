@@ -6,7 +6,8 @@ from sqlalchemy.orm import sessionmaker
 from eagle_metaparser import get_actress_name_id, get_all_file_metadatas
 
 LIB_PATH = "./static/eagle_library"
-engine = create_engine('sqlite:///database/perch.db?check_same_thread=False')
+engine = create_engine(
+    f"sqlite:///{__file__}/../database/perch.db?check_same_thread=False")
 Base = declarative_base()
 Session = sessionmaker(engine)
 
