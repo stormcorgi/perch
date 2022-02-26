@@ -83,11 +83,15 @@ class Tag(Base):
     @classmethod
     def all(cls, session=Session()):
         """Query Tag table and make unique, then return all unique Tag object"""
-        tag_list = []
-        tags = session.query(distinct(cls.tag)).all()
-        for tag in tags:
-            tag_list.append(cls(0, tag[0]))
-        return tag_list
+        tag_obj_list = []
+        tag_str_list = []
+        tags_str = session.query(distinct(cls.tag)).all()
+        for tag_str in tags_str:
+            tag_str_list.append(tag_str[0])
+        tag_str_list = sorted(tag_str_list)
+        for tag_str in tag_str_list:
+            tag_obj_list.append(cls(0, tag_str))
+        return tag_obj_list
 
     @classmethod
     def get_by_movie(cls, fileid, session=Session()):
@@ -166,5 +170,6 @@ def update_files(session=Session(), lib_path=LIB_PATH, quiet=False):
 
 
 if __name__ == "__main__":
-    update_actress()
-    update_files()
+    # update_actress()
+    # update_files()
+    print(Tag.all())
