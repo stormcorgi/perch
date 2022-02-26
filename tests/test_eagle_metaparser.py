@@ -29,7 +29,10 @@ def test_get_file_metadata():
 
 def test_get_all_file_metadatas():
     """parse master metadata.json, get tag[]"""
+    fileid = "L03BG2NLNXQOK"
     metadatas = get_all_file_metadatas(sample_lib)
-    assert metadatas[0]["L03BG2NLNXQOK"]["filename"] == "1vv6rPwy-kk"
-    assert metadatas[0]["L03BG2NLNXQOK"]["actressid"][0] == "L03BHPEH9SNKO"
-    assert metadatas[0]["L03BG2NLNXQOK"]["tags"][0] == "night"
+    for metadata in metadatas:
+        if fileid in metadata:
+            assert metadata[fileid]["filename"] == "1vv6rPwy-kk"
+            assert metadata[fileid]["actressid"][0] == "L03BHPEH9SNKO"
+            assert metadata[fileid]["tags"][0] == "night"
