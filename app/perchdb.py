@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from eagle_metaparser import get_actress_name_id, get_all_file_metadatas
 
 LIB_PATH = "./static/eagle_library"
-engine = create_engine('sqlite:///database/perch.db')
+engine = create_engine('sqlite:///database/perch.db?check_same_thread=False')
 Base = declarative_base()
 Session = sessionmaker(engine)
 
@@ -30,6 +30,20 @@ class Actress(Base):
     def get_by_name(cls, name, session=Session()):
         """Query Actress table and filter by name and return one Actress object"""
         return session.query(cls).filter(cls.name == name).first()
+
+    @classmethod
+    def get_by_id(cls, actressid, session=Session()):
+        """Query Actress table and filter by actressid and return one Actress object"""
+        return session.query(cls).filter(cls.actressid == actressid).first()
+
+    @classmethod
+    def get_by_movie(cls, fileid, session=Session()):
+        """Query Movie table and filter by fileid and return all Actresses object"""
+        movie_obj_list = []
+        movies = session.query(Movie).filter(Movie.fileid == fileid).all()
+        for movie in movies:
+            movie_obj_list.append(Actress.get_by_id(movie.actressid))
+        return movie_obj_list
 
 
 class Movie(Base):
@@ -172,4 +186,5 @@ def update_files(session=Session(), lib_path=LIB_PATH, quiet=False):
 if __name__ == "__main__":
     # update_actress()
     # update_files()
-    print(Tag.all())
+    # print(Movie.all())
+    print(Actress.get_by_movie("KYDUNFM9D6PEC"))

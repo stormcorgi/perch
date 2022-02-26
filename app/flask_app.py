@@ -37,10 +37,12 @@ def rend_player():
     filepath = fileid + ".info"
     filename = request.args.get('name', default=None, type=str)
     tags = Tag.get_by_movie(fileid)
+    actresses = Actress.get_by_movie(fileid)
     return render_template(
         "player.html",
         filepath=filepath,
         filename=filename,
+        actresses=actresses,
         tags=tags
     )
 
