@@ -13,7 +13,7 @@
         <h5 class="text-muted">actress</h5>
         <div class="row">
             {% for actress in actresses %}
-            {% if loop.index % 4 == 0 %}
+            {% if loop.index % 3 == 0 %}
             <div class="col">
                 <a href="actress/{{actress.name}}">{{actress.name}}</a>
             </div>
@@ -30,7 +30,7 @@
         <h5 class="text-muted">tags</h5>
         <div class="row">
             {% for tag in tags %}
-            {% if loop.index % 5 == 0 %}
+            {% if loop.index % 2 == 0 %}
             <div class="col">
                 <a href="tag/{{tag.tag}}">{{tag.tag}}</a>
             </div>

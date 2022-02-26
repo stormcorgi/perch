@@ -10,17 +10,17 @@
 
     <h3 class="text-center">{{tag}}</h3>
     <div class="container">
-        <div class="row">
+        <div class="row row-cols-2">
             {% for movie in movies %}
-            {% if loop.index % 3 == 0 %}
-            <div class="col">
+            {% if loop.index % 2 == 0 %}
+            <div class="col" style="width:25%">
                 <div class="thumbnail">
                     <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
-                        <img class="img-rounded" style="width:100%"
+                        <img class="img-thumbnail" style="width:100%"
                             src="../static/eagle_library/images/{{movie.fileid}}.info/{{movie.filename}}_thumbnail.png">
                     </a>
                 </div>
-                <p class="text-center">
+                <p class="text-center text-truncate">
                     <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
                         {{movie.filename}}
                     </a>
@@ -29,14 +29,14 @@
         </div>
         <div class="row">
             {% else %}
-            <div class="col">
+            <div class="col" style="width:25%">
                 <div class="thumbnail">
                     <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
-                        <img class="img-rounded" style="width:100%"
+                        <img class="img-thumbnail" style="width:100%"
                             src="../static/eagle_library/images/{{movie.fileid}}.info/{{movie.filename}}_thumbnail.png">
                     </a>
                 </div>
-                <p class="text-center">
+                <p class="text-center text-truncate">
                     <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
                         {{movie.filename}}
                     </a>
