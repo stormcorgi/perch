@@ -184,7 +184,5 @@ def update_files(session=Session(), lib_path=LIB_PATH, quiet=False):
 
 
 if __name__ == "__main__":
-    # update_actress()
-    # update_files()
-    # print(Movie.all())
-    print(Actress.get_by_movie("KYDUNFM9D6PEC"))
+    update_actress()
+    update_files()
