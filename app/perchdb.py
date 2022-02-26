@@ -20,17 +20,19 @@ class Actress(Base):
     def __repr__(self):
         return f"Actress<{self.id},{self.actressid},{self.name}>"
 
-    def all(self):
+    @classmethod
+    def all(cls):
         """Query Actress table and return all Actress object"""
         with Session() as session:
-            actresses = session.query(self).all()
+            actresses = session.query(cls).all()
         return actresses
 
-    def get_by_name(self, name):
+    @classmethod
+    def get_by_name(cls, name):
         """Query Actress table and filter by name and return one Actress object"""
         with Session() as session:
-            actress = session.query(self).filter(
-                self.name == name).first()
+            actress = session.query(cls).filter(
+                cls.name == name).first()
         return actress
 
 
@@ -45,28 +47,31 @@ class Movie(Base):
     def __repr__(self):
         return f"Movie<{self.id},{self.filename},{self.fileid},{self.actressid}>"
 
-    def all(self):
+    @classmethod
+    def all(cls):
         """return all Movie in DB"""
         with Session() as session:
-            movies = session.query(self).all()
+            movies = session.query(cls).all()
         return movies
 
-    def get_by_tag(self, search_tag):
+    @classmethod
+    def get_by_tag(cls, search_tag):
         """Query Tag table by tag and return Movie object lists"""
         movies = []
         with Session() as session:
             tag_records = session.query(Tag).filter(
                 Tag.tag == search_tag).all()
             for tag_record in tag_records:
-                movies.append(session.query(self).filter(
-                    self.fileid == tag_record.fileid).first())
+                movies.append(session.query(cls).filter(
+                    cls.fileid == tag_record.fileid).first())
         return movies
 
-    def get_by_actress(self, actressid):
+    @classmethod
+    def get_by_actress(cls, actressid):
         """Query DB, return all Movie that actress appear"""
         with Session() as session:
-            movies = session.query(self).filter(
-                self.actressid == actressid).all()
+            movies = session.query(cls).filter(
+                cls.actressid == actressid).all()
         return movies
 
 
@@ -84,21 +89,23 @@ class Tag(Base):
     def __repr__(self):
         return f"Tag<{self.tagid},{self.fileid},{self.tag}>"
 
-    def all(self):
+    @classmethod
+    def all(cls):
         """Query Tag table and make unique, then return all unique Tag object"""
         tag_list = []
         with Session() as session:
-            tags = session.query(distinct(self.tag)).all()
+            tags = session.query(distinct(cls.tag)).all()
             # rawTags = session.query(Tag).all()
         for tag in tags:
             # print("Tag<-,-,%s>" % (tag[0]))
-            tag_list.append(self(0, tag[0]))
+            tag_list.append(cls(0, tag[0]))
         return tag_list
 
-    def get_by_movie(self, fileid):
+    @classmethod
+    def get_by_movie(cls, fileid):
         """Query Tag table by Movie.fileid and return Tag object lists"""
         with Session() as session:
-            return session.query(self).filter(self.fileid == fileid).all()
+            return session.query(cls).filter(cls.fileid == fileid).all()
 
 
 # create DB tables inherited Base
