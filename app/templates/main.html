@@ -28,8 +28,14 @@
         </div>
         <br>
         <h5 class="text-muted">tags</h5>
+        <!--
         <div class="row">
-            {% for tag in tags %}
+        -->
+        {% for tag in tags %}
+        <span class="badge rounded-pill bg-info">
+            <a href="tag/{{tag.tag}}" class="text-white">{{tag.tag}}</a>
+
+            <!--
             {% if loop.index % 2 == 0 %}
             <div class="col">
                 <a href="tag/{{tag.tag}}">{{tag.tag}}</a>
@@ -41,8 +47,13 @@
                 <a href="tag/{{tag.tag}}">{{tag.tag}}</a>
             </div>
             {% endif %}
-            {% endfor %}
+
+            -->
+        </span>
+        {% endfor %}
+        <!--
         </div>
+        --!>
     </div>
     {% include "./parts/bootstrap-js.html" %}
 </body>
