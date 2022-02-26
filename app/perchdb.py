@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from eagle_metaparser import get_actress_name_id, get_all_file_metadatas
 
+LIB_PATH = "./static/eagle.library"
 engine = create_engine('sqlite:///database/perch.db')
 Base = declarative_base()
 Session = sessionmaker(engine)
@@ -21,19 +22,14 @@ class Actress(Base):
         return f"Actress<{self.id},{self.actressid},{self.name}>"
 
     @classmethod
-    def all(cls):
+    def all(cls, session=Session()):
         """Query Actress table and return all Actress object"""
-        with Session() as session:
-            actresses = session.query(cls).all()
-        return actresses
+        return session.query(cls).all()
 
     @classmethod
-    def get_by_name(cls, name):
+    def get_by_name(cls, name, session=Session()):
         """Query Actress table and filter by name and return one Actress object"""
-        with Session() as session:
-            actress = session.query(cls).filter(
-                cls.name == name).first()
-        return actress
+        return session.query(cls).filter(cls.name == name).first()
 
 
 class Movie(Base):
@@ -82,7 +78,7 @@ class Tag(Base):
     fileid = Column(String)
     tag = Column(String)
 
-    def __init__(self, fileid, tag):
+    def __init__(self, fileid="", tag=""):
         self.fileid = fileid
         self.tag = tag
 
@@ -112,19 +108,19 @@ class Tag(Base):
 Base.metadata.create_all(engine)
 
 
-def update_actress():
+def update_actress(session=Session(), lib_path=LIB_PATH, quiet=False):
     """check metadata.json and update DB actress table"""
-    with Session() as session:
-        name_id_lists = get_actress_name_id()
-        for name, actressid in name_id_lists.items():
-            act = session.query(Actress).filter(
-                Actress.actressid == actressid).all()
-            if not act:
+    name_id_lists = get_actress_name_id(lib_path)
+    for name, actressid in name_id_lists.items():
+        act = session.query(Actress).filter(
+            Actress.actressid == actressid).all()
+        if not act:
+            if not quiet:
                 print("=== " + name + " ===")
                 print("id : " + actressid)
-                actress_sql = Actress(name=name, actressid=actressid)
-                session.add(actress_sql)
-                session.commit()
+            actress_sql = Actress(name=name, actressid=actressid)
+            session.add(actress_sql)
+            session.commit()
 
 
 def update_tags(session, fileid, item):
@@ -151,7 +147,7 @@ def update_filename(session, movs, item):
             session.commit()
 
 
-def update_files():
+def update_files(quiet=False):
     """check images/metadata.json and update DB movie,tag table"""
     with Session() as session:
         lists = get_all_file_metadatas()
@@ -165,11 +161,12 @@ def update_files():
                     movs = session.query(Movie).filter(
                         Movie.fileid == fileid, Movie.actressid == i).all()
                     if not movs:
-                        print("=== fileid : " + fileid + " ===")
-                        print(" " + item["filename"])
-                        print(" - actress - > " + i)
-                        print(" - tags - ")
-                        print(item["tags"])
+                        if not quiet:
+                            print("=== fileid : " + fileid + " ===")
+                            print(" " + item["filename"])
+                            print(" - actress - > " + i)
+                            print(" - tags - ")
+                            print(item["tags"])
                         mov_sql = Movie(
                             fileid=fileid, filename=item["filename"], actressid=i)
                         session.add(mov_sql)
@@ -181,5 +178,3 @@ def update_files():
 if __name__ == "__main__":
     update_actress()
     update_files()
-    # print(get_movies_by_tag("480p"))
-    # print(get_tags_by_movie("KYCDXFAFR3R5F"))
