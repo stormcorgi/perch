@@ -1,7 +1,8 @@
-static/eagle_library
+app/static/eagle_library
 __pycache__
 .venv
 *.sh
 perch.db
 .DS_Store
 .coverage
+.pytest_cache

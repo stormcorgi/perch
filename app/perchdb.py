@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from eagle_metaparser import get_actress_name_id, get_all_file_metadatas
 
-engine = create_engine('sqlite:///perch.db')
+engine = create_engine('sqlite:///database/perch.db')
 Base = declarative_base()
 Session = sessionmaker(engine)
 
