@@ -9,8 +9,12 @@
         <h3 class="text-center">{{filename}}</h3>
     </a>
     <div class="container">
-        <video controls width=100% poster="../static/eagle_library/images/{{filepath}}/{{filename}}_thumbnail.png"
-            src="../static/eagle_library/images/{{filepath}}/{{filename}}.mp4"></video>
+        <video 
+	 controls 
+	 width="100%" 
+	 preload="metadata"
+	 poster="../static/eagle_library/images/{{filepath}}/{{filename}}_thumbnail.png"
+         src="../static/eagle_library/images/{{filepath}}/{{filename}}.mp4"></video>
     </div>
     </div>
     <p class="text-center">
