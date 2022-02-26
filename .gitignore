@@ -4,3 +4,4 @@ __pycache__
 *.sh
 perch.db
 .DS_Store
+.coverage
