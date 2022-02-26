@@ -44,31 +44,26 @@ class Movie(Base):
         return f"Movie<{self.id},{self.filename},{self.fileid},{self.actressid}>"
 
     @classmethod
-    def all(cls):
+    def all(cls, session=Session()):
         """return all Movie in DB"""
-        with Session() as session:
-            movies = session.query(cls).all()
-        return movies
+        return session.query(cls).all()
 
     @classmethod
-    def get_by_tag(cls, search_tag):
+    def get_by_tag(cls, search_tag, session=Session()):
         """Query Tag table by tag and return Movie object lists"""
         movies = []
-        with Session() as session:
-            tag_records = session.query(Tag).filter(
-                Tag.tag == search_tag).all()
-            for tag_record in tag_records:
-                movies.append(session.query(cls).filter(
-                    cls.fileid == tag_record.fileid).first())
+        tag_records = session.query(Tag).filter(
+            Tag.tag == search_tag).all()
+        for tag_record in tag_records:
+            movies.append(session.query(cls).filter(
+                cls.fileid == tag_record.fileid).first())
         return movies
 
     @classmethod
-    def get_by_actress(cls, actressid):
+    def get_by_actress(cls, actressid, session=Session()):
         """Query DB, return all Movie that actress appear"""
-        with Session() as session:
-            movies = session.query(cls).filter(
-                cls.actressid == actressid).all()
-        return movies
+        return session.query(cls).filter(
+            cls.actressid == actressid).all()
 
 
 class Tag(Base):
@@ -86,22 +81,18 @@ class Tag(Base):
         return f"Tag<{self.tagid},{self.fileid},{self.tag}>"
 
     @classmethod
-    def all(cls):
+    def all(cls, session=Session()):
         """Query Tag table and make unique, then return all unique Tag object"""
         tag_list = []
-        with Session() as session:
-            tags = session.query(distinct(cls.tag)).all()
-            # rawTags = session.query(Tag).all()
+        tags = session.query(distinct(cls.tag)).all()
         for tag in tags:
-            # print("Tag<-,-,%s>" % (tag[0]))
             tag_list.append(cls(0, tag[0]))
         return tag_list
 
     @classmethod
-    def get_by_movie(cls, fileid):
+    def get_by_movie(cls, fileid, session=Session()):
         """Query Tag table by Movie.fileid and return Tag object lists"""
-        with Session() as session:
-            return session.query(cls).filter(cls.fileid == fileid).all()
+        return session.query(cls).filter(cls.fileid == fileid).all()
 
 
 # create DB tables inherited Base
@@ -147,32 +138,31 @@ def update_filename(session, movs, item):
             session.commit()
 
 
-def update_files(quiet=False):
+def update_files(session=Session(), lib_path=LIB_PATH, quiet=False):
     """check images/metadata.json and update DB movie,tag table"""
-    with Session() as session:
-        lists = get_all_file_metadatas()
-        for lst in lists:
-            for fileid, item in lst.items():
-                update_tags(session, fileid, item)
+    lists = get_all_file_metadatas(lib_path)
+    for lst in lists:
+        for fileid, item in lst.items():
+            update_tags(session, fileid, item)
 
-                # TODO each actressid, put movie record. strange SQL usage?
-                for i in item["actressid"]:
-                    # if data is already exist(fileid AND actressid), pass
-                    movs = session.query(Movie).filter(
-                        Movie.fileid == fileid, Movie.actressid == i).all()
-                    if not movs:
-                        if not quiet:
-                            print("=== fileid : " + fileid + " ===")
-                            print(" " + item["filename"])
-                            print(" - actress - > " + i)
-                            print(" - tags - ")
-                            print(item["tags"])
-                        mov_sql = Movie(
-                            fileid=fileid, filename=item["filename"], actressid=i)
-                        session.add(mov_sql)
-                        session.commit()
-                    else:
-                        update_filename(session, movs, item)
+            # TODO each actressid, put movie record. strange SQL usage?
+            for i in item["actressid"]:
+                # if data is already exist(fileid AND actressid), pass
+                movs = session.query(Movie).filter(
+                    Movie.fileid == fileid, Movie.actressid == i).all()
+                if not movs:
+                    if not quiet:
+                        print("=== fileid : " + fileid + " ===")
+                        print(" - filename - > " + item["filename"])
+                        print(" - actress -- > " + i)
+                        print(" - tags - ")
+                        print(item["tags"])
+                    mov_sql = Movie(
+                        fileid=fileid, filename=item["filename"], actressid=i)
+                    session.add(mov_sql)
+                    session.commit()
+                else:
+                    update_filename(session, movs, item)
 
 
 if __name__ == "__main__":
