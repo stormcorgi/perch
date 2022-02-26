@@ -3,33 +3,32 @@ import json
 import os
 
 
-def get_actress_name_id():
+def get_actress_name_id(lib_path="./static/eagle_library"):
     """returns {actressname: eagleid}"""
+    meta_path = lib_path + "/metadata.json"
     actress_name_id = {}
 
     with open(
-        './static/eagle_library/metadata.json',
+        meta_path,
         'r',
         encoding='utf-8'
     ) as file:
         json_meta = json.load(file)
+        # TODO adopt another folder structure. current: category - actress
         folders = json_meta["folders"]
         for folder in folders:
-            # print(folder["name"])
             childrens = folder["children"]
             for child in childrens:
-                # print("  --> name : " + child["name"])
-                # print("  --> id : " + child["id"])
                 actress_name_id[child["name"]] = child["id"]
-        # print(actress_name_id)
     return actress_name_id
 
 
-def get_all_tags():
+def get_all_tags(lib_path="./static/eagle_library"):
     """returns ["tag name itself"]"""
+    meta_path = lib_path + "/metadata.json"
     taglist = []
     with open(
-        './static/eagle_library/metadata.json',
+        meta_path,
         'r',
         encoding='utf-8'
     ) as file:
@@ -55,15 +54,15 @@ def get_file_metadata(dirpath):
     return metadata
 
 
-def get_all_file_metadatas():
+def get_all_file_metadatas(lib_path="./static/eagle_library"):
     """ scan every images folder and get each metadata """
     file_metadatas = []
-    path = "./static/eagle_library/images"
+    path = f"{lib_path}/images"
     dirs = os.listdir(path=path)
     for tdir in dirs:
-        if os.path.isdir(os.path.join(path, tdir)):
+        targetpath = os.path.join(path, tdir)
+        if os.path.isdir(targetpath):
             try:
-                targetpath = "./static/eagle_library/images/" + tdir
                 file_metadatas.append(get_file_metadata(targetpath))
             except json.decoder.JSONDecodeError:
                 pass
@@ -73,8 +72,6 @@ def get_all_file_metadatas():
 
 
 if __name__ == "__main__":
-    print(
-        get_file_metadata("./static/eagle_library/images/KYDUNFM9D6PEC.info")
-    )
+    pass
     # print(get_all_tags())
-    # print(get_all_file_metadatas())
+    # print(get_all_file_metadatas()
