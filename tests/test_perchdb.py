@@ -5,15 +5,13 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import drop_database
 from app.perchdb import Base, Actress, Movie, Tag
 from app.perchdb import update_actress, update_files
-from tests.conftest import SAMPLE_LIB
-
-DBPATH = 'sqlite:///tests/perch.db'
+from tests.conftest import SAMPLE_LIB, SAMPLE_DB_PATH
 
 
 @pytest.fixture(name="db_session")
 def fixture_db():
     """generate test DB(when test finished,DB file will be erased)"""
-    test_engine = create_engine(DBPATH)
+    test_engine = create_engine(SAMPLE_DB_PATH)
     test_session = sessionmaker(test_engine)
 
     # create DB tables inherited Base
@@ -22,7 +20,7 @@ def fixture_db():
     yield test_session()
 
     # remove db file
-    drop_database(DBPATH)
+    drop_database(SAMPLE_DB_PATH)
 
 
 def test_update_actress(db_session):
