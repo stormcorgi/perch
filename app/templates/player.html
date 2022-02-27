@@ -5,14 +5,14 @@
 
 <body>
     {% include "./parts/header.html" %}
-    <a href="smb://192.168.10.110/share1/eagle.library/images/{{filepath}}/{{filename}}.pdf">
-        <h3 class="text-center">{{filename}}</h3>
-    </a>
+    <h3 class="text-center">{{filename}}</h3>
     <div class="container">
         <!--
         poster="../static/eagle_library/images/{{filepath}}/{{filename}}_thumbnail.png"
         -->
-        <embed src="../static/eagle_library/images/{{filepath}}/{{filename}}.pdf" width="100%" height="100%">
+        <iframe src="../static/pdfjs/web/viewer.html?file=../../eagle_library/images/{{filepath}}/{{filename}}.pdf"
+            width="100%" height="100%" scrolling='no' allowfullscreen webkitallowfullscreen>
+        </iframe>
     </div>
     </div>
     <h6 class="text-center text-muted">作者:
