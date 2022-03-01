@@ -36,7 +36,7 @@ def test_update_files(db_session):
 
 
 def test_actress_all(db_session):
-    """update_actress, then verify all data query-able"""
+    """return all Actress data query-able"""
     update_actress(db_session, SAMPLE_LIB, True)
     all_actresses = Actress.all(db_session)
     for actress in all_actresses:
@@ -46,7 +46,7 @@ def test_actress_all(db_session):
 
 
 def test_actress_get_by_name(db_session):
-    """update_actress, then query by name string"""
+    """query by name string"""
     update_actress(db_session, SAMPLE_LIB, True)
     record = Actress.get_by_name("food", db_session)
     assert record is not None
@@ -55,6 +55,11 @@ def test_actress_get_by_name(db_session):
     assert record.name == "food"
     record = Actress.get_by_name("non-exist-name", db_session)
     assert record is None
+
+def test_actress_get_by_id(db_session):
+    """query by actressid , return Actress object"""
+    update_actress(db_session, SAMPLE_LIB, True)
+    assert type(Actress.get_by_id("L03BHCN6FV119",db_session)) == Actress
 
 # movie
 
