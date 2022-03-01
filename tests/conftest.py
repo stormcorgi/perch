@@ -7,4 +7,4 @@ sys.path.append(os.path.abspath(os.path.dirname(
     os.path.abspath(__file__)) + "/../app/"))
 
 SAMPLE_LIB = "./tests/sample.library"
-SAMPLE_DB_PATH = 'sqlite:///tests/perch.db'
+SAMPLE_DB_PATH = 'sqlite:///tests/test.db'

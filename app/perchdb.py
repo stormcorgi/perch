@@ -3,7 +3,7 @@ from sqlalchemy import create_engine, Column, String, Integer
 from sqlalchemy import distinct
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from eagle_metaparser import get_actress_name_id, get_all_file_metadatas
+from eagle_metaparser import parse_actress_name_id, parse_all_file_metadatas
 
 LIB_PATH = "./static/eagle_library"
 engine = create_engine(
@@ -43,7 +43,7 @@ class Actress(Base):
         movie_obj_list = []
         movies = session.query(Movie).filter(Movie.fileid == fileid).all()
         for movie in movies:
-            movie_obj_list.append(Actress.get_by_id(movie.actressid))
+            movie_obj_list.append(cls.get_by_id(movie.actressid, session))
         return movie_obj_list
 
 
@@ -120,7 +120,7 @@ Base.metadata.create_all(engine)
 
 def update_actress(session=Session(), lib_path=LIB_PATH, quiet=False):
     """check metadata.json and update DB actress table"""
-    name_id_lists = get_actress_name_id(lib_path)
+    name_id_lists = parse_actress_name_id(lib_path)
     for name, actressid in name_id_lists.items():
         act = session.query(Actress).filter(
             Actress.actressid == actressid).all()
@@ -159,7 +159,7 @@ def update_filename(session, movs, item):
 
 def update_files(session=Session(), lib_path=LIB_PATH, quiet=False):
     """check images/metadata.json and update DB movie,tag table"""
-    lists = get_all_file_metadatas(lib_path)
+    lists = parse_all_file_metadatas(lib_path)
     for lst in lists:
         for fileid, item in lst.items():
             update_tags(session, fileid, item)

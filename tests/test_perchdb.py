@@ -56,10 +56,22 @@ def test_actress_get_by_name(db_session):
     record = Actress.get_by_name("non-exist-name", db_session)
     assert record is None
 
+
 def test_actress_get_by_id(db_session):
     """query by actressid , return Actress object"""
     update_actress(db_session, SAMPLE_LIB, True)
-    assert type(Actress.get_by_id("L03BHCN6FV119",db_session)) == Actress
+    assert isinstance(Actress.get_by_id("L03BHCN6FV119", db_session), Actress)
+    assert Actress.get_by_id("non-exist-actressid", db_session) is None
+
+
+def test_actress_get_by_movie(db_session):
+    """query Movie table by fileid, return all Actress object"""
+    update_actress(db_session, SAMPLE_LIB, True)
+    update_files(db_session, SAMPLE_LIB, True)
+    movies = Actress.get_by_movie("L03BG2NK1ERKW", db_session)
+    assert len(movies) == 2
+    for movie in movies:
+        assert isinstance(movie, Actress)
 
 # movie
 
@@ -94,6 +106,6 @@ def test_tag_all(db_session):
 
 def test_get_by_movie(db_session):
     """update_files, then query all Tag by Movie, return matched Tags """
-    update_files(db_session, SAMPLE_LIB, False)
+    update_files(db_session, SAMPLE_LIB, True)
     assert len(Tag.get_by_movie("L03BG2NLRKV5A", db_session)) == 2
     assert len(Tag.get_by_movie("non-exist-tag", db_session)) == 0

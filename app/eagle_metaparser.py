@@ -3,7 +3,7 @@ import json
 import os
 
 
-def get_actress_name_id(lib_path="./static/eagle_library"):
+def parse_actress_name_id(lib_path="./static/eagle_library"):
     """returns {actressname: eagleid}"""
     meta_path = lib_path + "/metadata.json"
     actress_name_id = {}
@@ -23,7 +23,7 @@ def get_actress_name_id(lib_path="./static/eagle_library"):
     return actress_name_id
 
 
-def get_all_tags(lib_path="./static/eagle_library"):
+def parse_all_tags(lib_path="./static/eagle_library"):
     """returns ["tag name itself"]"""
     meta_path = lib_path + "/metadata.json"
     taglist = []
@@ -39,7 +39,7 @@ def get_all_tags(lib_path="./static/eagle_library"):
     return taglist
 
 
-def get_file_metadata(dirpath):
+def parse_file_metadata(dirpath):
     """returns {fileid : filename}"""
     path = dirpath + "/metadata.json"
     with open(path, 'r', encoding='utf-8') as file:
@@ -54,7 +54,7 @@ def get_file_metadata(dirpath):
     return metadata
 
 
-def get_all_file_metadatas(lib_path="./static/eagle_library"):
+def parse_all_file_metadatas(lib_path="./static/eagle_library"):
     """ scan every images folder and get each metadata """
     file_metadatas = []
     path = f"{lib_path}/images"
@@ -63,7 +63,7 @@ def get_all_file_metadatas(lib_path="./static/eagle_library"):
         targetpath = os.path.join(path, tdir)
         if os.path.isdir(targetpath):
             try:
-                file_metadatas.append(get_file_metadata(targetpath))
+                file_metadatas.append(parse_file_metadata(targetpath))
             except json.decoder.JSONDecodeError:
                 pass
             except FileNotFoundError:
