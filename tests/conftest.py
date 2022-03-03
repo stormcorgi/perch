@@ -35,4 +35,5 @@ def fixture_app():
 
 @pytest.fixture
 def client(app):
+    """Create and return app.test_client()"""
     return app.test_client()
