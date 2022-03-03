@@ -1,17 +1,14 @@
 """ use flask and perchdb.py """
 import os
 from flask import render_template, Flask, request
-from perch import db
+from perch import perchdb as db
 
 
 def create_app(test_config=None):
     """Create and configure an instance of flask app"""
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        DATABASE=os.path.join(
-            app.instance_path, "../perch/database/perch.sqlite"),
-        LIB_PATH=os.path.join(
-            app.instance_path, "../perch/static/eagle_library"),
+        DATABASE=os.path.join(app.instance_path, "/database/perch.db")
     )
 
     if test_config is None:
@@ -23,8 +20,6 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
-    app.cli.add_command(db.update_db)
 
     @app.route("/")
     def rend_main():
