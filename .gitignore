@@ -6,12 +6,11 @@ tests/sample.library/saved-filters.json
 tests/sample.library/tags.json
 tests/sample.library/images/*/*.png
 tests/sample.library/images/*/*.jpg
+instance/
 __pycache__
 .venv
 *.sh
-perch.db
 .DS_Store
 .coverage
 .pytest_cache
-coverage.xml
 .vscode

@@ -8,7 +8,7 @@ def create_app(test_config=None):
     """Create and configure an instance of flask app"""
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        DATABASE=os.path.join(app.instance_path, "/database/perch.db")
+        DATABASE=os.path.join(app.instance_path, "/perch.sqlite")
     )
 
     if test_config is None:

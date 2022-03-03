@@ -1,13 +1,15 @@
 """manipulate perch.db with sqlalchemy, parse metadata with eagle_metaparser.py"""
+import os
 from sqlalchemy import create_engine, Column, String, Integer
 from sqlalchemy import distinct
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from perch.eagle_metaparser import parse_actress_name_id, parse_all_file_metadatas
 
-LIB_PATH = "./static/eagle_library"
+file_path = os.path.dirname(__file__)
+LIB_PATH = f"{file_path}/../static/eagle_library"
 engine = create_engine(
-    f"sqlite:///{__file__}/../database/perch.db?check_same_thread=False")
+    f"sqlite:///{file_path}/../instance/perch.sqlite?check_same_thread=False")
 Base = declarative_base()
 Session = sessionmaker(engine)
 

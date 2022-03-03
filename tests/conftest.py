@@ -6,11 +6,9 @@ import pytest
 import tempfile
 from perch import create_app
 
-sys.path.append(os.path.abspath(os.path.dirname(
-    os.path.abspath(__file__)) + "/../app/"))
-
-SAMPLE_LIB = "./tests/sample.library"
-SAMPLE_DB_PATH = 'sqlite:///tests/test.db'
+file_path = os.path.dirname(__file__)
+SAMPLE_LIB = f"{file_path}/sample.library"
+SAMPLE_DB_PATH = f"sqlite:///{file_path}/test.sqlite"
 
 
 @pytest.fixture(name="app")
