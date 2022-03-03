@@ -1,11 +1,12 @@
 """os,json for parse metadata.json"""
 import json
 import os
+from flask import current_app
 
 
-def parse_actress_name_id(lib_path="./static/eagle_library"):
+def parse_actress_name_id():
     """returns {actressname: eagleid}"""
-    meta_path = lib_path + "/metadata.json"
+    meta_path = current_app.config["LIB_PATH"] + "/metadata.json"
     actress_name_id = {}
 
     with open(
@@ -23,9 +24,9 @@ def parse_actress_name_id(lib_path="./static/eagle_library"):
     return actress_name_id
 
 
-def parse_all_tags(lib_path="./static/eagle_library"):
+def parse_all_tags():
     """returns ["tag name itself"]"""
-    meta_path = lib_path + "/metadata.json"
+    meta_path = current_app.config["LIB_PATH"] + "/metadata.json"
     taglist = []
     with open(
         meta_path,
@@ -54,9 +55,10 @@ def parse_file_metadata(dirpath):
     return metadata
 
 
-def parse_all_file_metadatas(lib_path="./static/eagle_library"):
+def parse_all_file_metadatas():
     """ scan every images folder and get each metadata """
     file_metadatas = []
+    lib_path = current_app.config["LIB_PATH"]
     path = f"{lib_path}/images"
     dirs = os.listdir(path=path)
     for tdir in dirs:
