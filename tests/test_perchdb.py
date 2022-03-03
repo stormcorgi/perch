@@ -3,8 +3,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import drop_database
-from app.perchdb import Base, Actress, Movie, Tag
-from app.perchdb import update_actress, update_files
+from perch.perchdb import Base, Actress, Movie, Tag
+from perch.perchdb import update_actress, update_files
 from tests.conftest import SAMPLE_LIB, SAMPLE_DB_PATH
 
 

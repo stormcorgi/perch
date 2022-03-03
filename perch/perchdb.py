@@ -3,7 +3,7 @@ from sqlalchemy import create_engine, Column, String, Integer
 from sqlalchemy import distinct
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from eagle_metaparser import parse_actress_name_id, parse_all_file_metadatas
+from perch.eagle_metaparser import parse_actress_name_id, parse_all_file_metadatas
 
 LIB_PATH = "./static/eagle_library"
 engine = create_engine(
