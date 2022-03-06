@@ -14,6 +14,11 @@ Base = declarative_base()
 Session = sessionmaker(engine)
 
 
+def generate_session():
+    """return Session"""
+    return sessionmaker(engine)
+
+
 class Actress(Base):
     """table Actress : id, actressid, name"""
     __tablename__ = 'actress'
@@ -25,22 +30,22 @@ class Actress(Base):
         return f"Actress<{self.id},{self.actressid},{self.name}>"
 
     @classmethod
-    def all(cls, session=Session()):
+    def all(cls, session):
         """Query Actress table and return all Actress object"""
         return session.query(cls).all()
 
     @classmethod
-    def get_by_name(cls, name, session=Session()):
+    def get_by_name(cls, name, session):
         """Query Actress table and filter by name and return one Actress object"""
         return session.query(cls).filter(cls.name == name).first()
 
     @classmethod
-    def get_by_id(cls, actressid, session=Session()):
+    def get_by_id(cls, actressid, session):
         """Query Actress table and filter by actressid and return one Actress object"""
         return session.query(cls).filter(cls.actressid == actressid).first()
 
     @classmethod
-    def get_by_movie(cls, fileid, session=Session()):
+    def get_by_movie(cls, fileid, session):
         """Query Movie table and filter by fileid and return all Actresses object"""
         movie_obj_list = []
         movies = session.query(Movie).filter(Movie.fileid == fileid).all()
@@ -61,12 +66,12 @@ class Movie(Base):
         return f"Movie<{self.id},{self.filename},{self.fileid},{self.actressid}>"
 
     @classmethod
-    def all(cls, session=Session()):
+    def all(cls, session):
         """return all Movie in DB"""
         return session.query(cls).all()
 
     @classmethod
-    def get_by_tag(cls, search_tag, session=Session()):
+    def get_by_tag(cls, search_tag, session):
         """Query Tag table by tag and return Movie object lists"""
         movies = []
         tag_records = session.query(Tag).filter(
@@ -77,7 +82,7 @@ class Movie(Base):
         return movies
 
     @classmethod
-    def get_by_actress(cls, actressid, session=Session()):
+    def get_by_actress(cls, actressid, session):
         """Query DB, return all Movie that actress appear"""
         return session.query(cls).filter(
             cls.actressid == actressid).all()
@@ -98,7 +103,7 @@ class Tag(Base):
         return f"Tag<{self.tagid},{self.fileid},{self.tag}>"
 
     @classmethod
-    def all(cls, session=Session()):
+    def all(cls, session):
         """Query Tag table and make unique, then return all unique Tag object"""
         tag_obj_list = []
         tag_str_list = []
@@ -111,7 +116,7 @@ class Tag(Base):
         return tag_obj_list
 
     @classmethod
-    def get_by_movie(cls, fileid, session=Session()):
+    def get_by_movie(cls, fileid, session):
         """Query Tag table by Movie.fileid and return Tag object lists"""
         return session.query(cls).filter(cls.fileid == fileid).all()
 

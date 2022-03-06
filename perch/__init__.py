@@ -21,26 +21,29 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    session_func = db.generate_session()
+    current_session = session_func()
+
     @app.route("/")
     def rend_main():
         """render main page"""
         return render_template(
             "main.html",
-            actresses=db.Actress.all(),
-            tags=db.Tag.all()
+            actresses=db.Actress.all(current_session),
+            tags=db.Tag.all(current_session)
         )
 
     @app.route("/actress/<name>")
     def rend_aectress(name):
         """render actress page"""
-        actress = db.Actress.get_by_name(name)
-        movies = db.Movie.get_by_actress(actress.actressid)
+        actress = db.Actress.get_by_name(name, current_session)
+        movies = db.Movie.get_by_actress(actress.actressid, current_session)
         return render_template("actress.html", actress=actress, movies=movies)
 
     @app.route("/tag/<tag>")
     def rend_tag(tag):
         """render tag page"""
-        movies = db.Movie.get_by_tag(tag)
+        movies = db.Movie.get_by_tag(tag, current_session)
         return render_template("tags.html", tag=tag, movies=movies)
 
     @app.route("/player")
@@ -49,8 +52,8 @@ def create_app(test_config=None):
         fileid = request.args.get('id', default=None, type=str)
         filepath = fileid + ".info"
         filename = request.args.get('name', default=None, type=str)
-        tags = db.Tag.get_by_movie(fileid)
-        actresses = db.Actress.get_by_movie(fileid)
+        tags = db.Tag.get_by_movie(fileid, current_session)
+        actresses = db.Actress.get_by_movie(fileid, current_session)
         return render_template(
             "player.html",
             filepath=filepath,
