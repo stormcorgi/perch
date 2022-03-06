@@ -62,4 +62,16 @@ def create_app(test_config=None):
             tags=tags
         )
 
+    @app.route("/admin", methods=["GET", "POST"])
+    def render_admin():
+        if request.method == "GET":
+            return render_template("admin.html")
+        else:
+            if request.form["task"] == "update_db":
+                db.update_actress(current_session)
+                db.update_files(current_session)
+                return f"""<html><body>{request.form["task"]} done!</body></html>"""
+            else:
+                return f"""<html><body>{request.form["task"]}</body></html>"""
+
     return app

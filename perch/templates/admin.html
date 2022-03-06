@@ -1,0 +1,21 @@
+<html>
+
+<head>
+    {% include "./parts/bootstrap-head.html" %}
+    <title>メンテナンス - perch</title>
+</head>
+
+<body>
+    {% include "./parts/header.html" %}
+
+    <h3 class="text-center">{{tag}}</h3>
+    <div class="container">
+        <form method="POST">
+            <button type="submit" name="task" value="update_db">update_db</button>
+        </form>
+
+    </div>
+    {% include "./parts/bootstrap-js.html" %}
+</body>
+
+</html>
