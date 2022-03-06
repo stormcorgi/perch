@@ -1,9 +1,7 @@
 """generate fixtures"""
-
-import sys
 import os
-import pytest
 import tempfile
+import pytest
 from perch import create_app
 
 file_path = os.path.dirname(__file__)
