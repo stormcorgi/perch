@@ -191,6 +191,13 @@ def update_files(session=Session(), lib_path=LIB_PATH, quiet=False):
                     update_filename(session, movs, item)
 
 
+def drop_db(session):
+    """drop all DB tables"""
+    session.query(Actress).delete()
+    session.query(Movie).delete()
+    session.query(Tag).delete()
+
+
 if __name__ == "__main__":
     update_actress()
     update_files()

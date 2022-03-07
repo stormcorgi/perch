@@ -71,6 +71,9 @@ def create_app(test_config=None):
                 db.update_actress(current_session)
                 db.update_files(current_session)
                 return f"""<html><body>{request.form["task"]} done!</body></html>"""
+            elif request.form["task"] == "drop_db":
+                db.drop_db(current_session)
+                return f"""<html><body>{request.form["task"]} done!</body></html>"""
             else:
                 return f"""<html><body>{request.form["task"]}</body></html>"""
 
