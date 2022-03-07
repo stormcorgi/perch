@@ -15,13 +15,17 @@
             {% for actress in actresses %}
             {% if loop.index % 3 == 0 %}
             <div class="col">
-                <a href="actress/{{actress.name}}">{{actress.name}}</a>
+                <a href="actress/{{actress.name}}" class="text-nowrap">{{actress.name}}<p
+                        class="small text-muted text-nowrap">({{actress.count}})</p>
+                </a>
             </div>
         </div>
         <div class="row">
             {% else %}
             <div class="col">
-                <a href="actress/{{actress.name}}">{{actress.name}}</a>
+                <a href="actress/{{actress.name}}" class="text-nowrap">{{actress.name}}<p
+                        class="small text-muted text-nowrap">({{actress.count}})</p>
+                </a>
             </div>
             {% endif %}
             {% endfor %}
@@ -57,6 +61,7 @@
         <br>
         <h5 class="text-muted">tools</h5>
         <a href="admin">admin</a>
+        <a href="random">random</a>
     </div>
     {% include "./parts/bootstrap-js.html" %}
 </body>

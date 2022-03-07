@@ -1,6 +1,7 @@
 """ use flask and perchdb.py """
 import os
-from flask import render_template, Flask, request
+import random
+from flask import render_template, Flask, request, redirect, url_for
 from perch import perchdb as db
 
 
@@ -70,11 +71,21 @@ def create_app(test_config=None):
             if request.form["task"] == "update_db":
                 db.update_actress(current_session)
                 db.update_files(current_session)
+                db.update_count(current_session)
                 return f"""<html><body>{request.form["task"]} done!</body></html>"""
             elif request.form["task"] == "drop_db":
                 db.drop_db(current_session)
                 return f"""<html><body>{request.form["task"]} done!</body></html>"""
             else:
                 return f"""<html><body>{request.form["task"]}</body></html>"""
+
+    @app.route("/random")
+    def jump_random():
+        total_movie_count = db.Movie.count_all(current_session)
+        random_id = random.randint(0, total_movie_count)
+        random_movie = db.Movie.get_by_id(random_id, current_session)
+        print(f"player?id={random_movie.fileid}&name={random_movie.filename}")
+        # <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
+        return redirect(url_for("rend_player", id=random_movie.fileid, name=random_movie.filename))
 
     return app

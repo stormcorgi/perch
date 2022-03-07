@@ -25,9 +25,10 @@ class Actress(Base):
     id = Column(Integer, primary_key=True, unique=True)
     actressid = Column(String)
     name = Column(String)
+    count = Column(Integer)
 
     def __repr__(self):
-        return f"Actress<{self.id},{self.actressid},{self.name}>"
+        return f"Actress<{self.id},{self.actressid},{self.name},{self.count}>"
 
     @classmethod
     def all(cls, session):
@@ -71,6 +72,11 @@ class Movie(Base):
         return session.query(cls).all()
 
     @classmethod
+    def count_all(cls, session):
+        """return all Movies count in DB"""
+        return session.query(cls).count()
+
+    @classmethod
     def get_by_tag(cls, search_tag, session):
         """Query Tag table by tag and return Movie object lists"""
         movies = []
@@ -86,6 +92,16 @@ class Movie(Base):
         """Query DB, return all Movie that actress appear"""
         return session.query(cls).filter(
             cls.actressid == actressid).all()
+
+    @classmethod
+    def count_by_actress(cls, search_actressid, session):
+        """return specified Actress's Movie count in DB"""
+        return session.query(cls).filter(cls.actressid == search_actressid).count()
+
+    @classmethod
+    def get_by_id(cls, search_id, session):
+        """Query Movie table and filter by id(not fileid) and return one Movie object"""
+        return session.query(cls).filter(cls.id == search_id).first()
 
 
 class Tag(Base):
@@ -191,6 +207,14 @@ def update_files(session=Session(), lib_path=LIB_PATH, quiet=False):
                     update_filename(session, movs, item)
 
 
+def update_count(session=Session(), lib_path=LIB_PATH, quiet=False):
+    """check all actress data and set count number"""
+    actresses = Actress.all(session)
+    for actress in actresses:
+        actress.count = Movie.count_by_actress(actress.actressid, session)
+        session.commit()
+
+
 def drop_db(session):
     """drop all DB tables"""
     session.query(Actress).delete()
@@ -201,3 +225,4 @@ def drop_db(session):
 if __name__ == "__main__":
     update_actress()
     update_files()
+    update_count()
