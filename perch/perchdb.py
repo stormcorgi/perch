@@ -207,7 +207,7 @@ def update_files(session=Session(), lib_path=LIB_PATH, quiet=False):
                     update_filename(session, movs, item)
 
 
-def update_count(session=Session(), lib_path=LIB_PATH, quiet=False):
+def update_count(session=Session()):
     """check all actress data and set count number"""
     actresses = Actress.all(session)
     for actress in actresses:
