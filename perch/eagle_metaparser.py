@@ -69,9 +69,3 @@ def parse_all_file_metadatas(lib_path="./static/eagle_library"):
             except FileNotFoundError:
                 pass
     return file_metadatas
-
-
-if __name__ == "__main__":
-    pass
-    # print(get_all_tags())
-    # print(get_all_file_metadatas()

@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from perch.eagle_metaparser import parse_actress_name_id, parse_all_file_metadatas
 
 file_path = os.path.dirname(__file__)
-LIB_PATH = f"{file_path}/../static/eagle_library"
+LIB_PATH = f"{file_path}/static/eagle_library"
 engine = create_engine(
     f"sqlite:///{file_path}/../instance/perch.sqlite?check_same_thread=False")
 Base = declarative_base()
