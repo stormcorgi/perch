@@ -1,21 +1,31 @@
 """manipulate perch.db with sqlalchemy, parse metadata with eagle_metaparser.py"""
-import os
 from sqlalchemy import create_engine, Column, String, Integer
 from sqlalchemy import distinct
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from perch.eagle_metaparser import parse_actress_name_id, parse_all_file_metadatas
 
-file_path = os.path.dirname(__file__)
-engine = create_engine(
-    f"sqlite:///{file_path}/../instance/perch.sqlite?check_same_thread=False")
 Base = declarative_base()
-Session = sessionmaker(engine)
 
 
-def generate_session():
-    """return Session"""
-    return sessionmaker(engine)
+def generate_engine(file_path):
+    """require file_path(/some/path/dbname.sqlite)"""
+    # print(f"engine generate -> sqlite:///{file_path}?check_same_thread=False")
+    return create_engine(
+        f"sqlite:///{file_path}?check_same_thread=False")
+
+
+def generate_session(file_path):
+    "db_session""return Session"""
+    return sessionmaker(generate_engine(file_path))
+
+
+def init_db(file_path):
+    """init db with app_context"""
+    # print(f"start init_db on {file_path}")
+    engine = generate_engine(file_path)
+    # create DB tables inherited Base
+    Base.metadata.create_all(engine)
 
 
 class Actress(Base):
@@ -136,11 +146,7 @@ class Tag(Base):
         return session.query(cls).filter(cls.fileid == fileid).all()
 
 
-# create DB tables inherited Base
-Base.metadata.create_all(engine)
-
-
-def update_actress(session=Session(), quiet=False):
+def update_actress(session, quiet=False):
     """check metadata.json and update DB actress table"""
     name_id_lists = parse_actress_name_id()
     for name, actressid in name_id_lists.items():
@@ -179,7 +185,7 @@ def update_filename(session, movs, item):
             session.commit()
 
 
-def update_files(session=Session(),  quiet=False):
+def update_files(session,  quiet=False):
     """check images/metadata.json and update DB movie,tag table"""
     lists = parse_all_file_metadatas()
     for lst in lists:
@@ -206,7 +212,7 @@ def update_files(session=Session(),  quiet=False):
                     update_filename(session, movs, item)
 
 
-def update_count(session=Session()):
+def update_count(session):
     """check all actress data and set count number"""
     actresses = Actress.all(session)
     for actress in actresses:
@@ -219,9 +225,4 @@ def drop_db(session):
     session.query(Actress).delete()
     session.query(Movie).delete()
     session.query(Tag).delete()
-
-
-if __name__ == "__main__":
-    update_actress()
-    update_files()
-    update_count()
+    session.commit()

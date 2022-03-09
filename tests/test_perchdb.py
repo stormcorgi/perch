@@ -2,7 +2,7 @@
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from perch.perchdb import Base, Actress, Movie, Tag
+from perch.perchdb import Base, Actress, Movie, Tag, generate_engine
 from perch.perchdb import update_actress, update_files, drop_db
 
 
@@ -10,7 +10,7 @@ from perch.perchdb import update_actress, update_files, drop_db
 def fixture_db(app):
     """generate test DB(when test finished,DB file will be erased)"""
     with app.app_context():
-        test_engine = create_engine(f"sqlite:///{app.config['DATABASE']}")
+        test_engine = generate_engine(app.config['DATABASE'])
         test_session = sessionmaker(test_engine)
         # create DB tables inherited Base
         Base.metadata.create_all(test_engine)
@@ -20,11 +20,12 @@ def fixture_db(app):
 # general
 
 
-def test_update_actress(db_session):
+def test_update_actress(app, db_session):
     """parse master metadata.json, update DB actress table"""
-    assert len(db_session.query(Actress).all()) == 0
-    update_actress(db_session, True)
-    assert len(db_session.query(Actress).all()) >= 1
+    with app.app_context():
+        assert len(db_session.query(Actress).all()) == 0
+        update_actress(db_session, True)
+        assert len(db_session.query(Actress).all()) >= 1
 
 
 def test_update_files(db_session):

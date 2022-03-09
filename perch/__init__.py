@@ -10,14 +10,12 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         DATABASE=os.path.join(
-            app.instance_path, "/perch.sqlite"),
+            app.instance_path, "perch.sqlite"),
         LIB_PATH=os.path.join(
             app.instance_path, "../perch/static/eagle_library")
     )
 
-    if test_config is None:
-        app.config.from_pyfile("config.py", silent=True)
-    else:
+    if test_config is not None:
         app.config.update(test_config)
 
     try:
@@ -25,7 +23,9 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    session_func = db.generate_session()
+    db_full_path = os.path.join(app.instance_path, app.config["DATABASE"])
+    db.init_db(db_full_path)
+    session_func = db.generate_session(db_full_path)
     current_session = session_func()
 
     @app.route("/")

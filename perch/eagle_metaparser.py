@@ -5,10 +5,13 @@ from flask import current_app
 
 
 def parse_actress_name_id():
-    """returns {actressname: eagleid}"""
+    """returns {actressname: eagleid}, or return None when failed parse"""
     with current_app.app_context():
         meta_path = current_app.config['LIB_PATH'] + "/metadata.json"
         actress_name_id = {}
+        # file exists?
+        if not os.path.exists(meta_path):
+            return None
 
         with open(
             meta_path,
@@ -26,8 +29,11 @@ def parse_actress_name_id():
 
 
 def parse_all_tags():
-    """returns ["tag name itself"]"""
+    """returns ["tag name itself"], or return None when failed parse"""
     meta_path = current_app.config['LIB_PATH'] + "/metadata.json"
+    # file exists?
+    if not os.path.exists(meta_path):
+        return None
     taglist = []
     with open(
         meta_path,
@@ -42,8 +48,11 @@ def parse_all_tags():
 
 
 def parse_file_metadata(dirpath):
-    """returns {fileid : filename}"""
+    """returns {fileid : filename}, or return None when failed parse"""
     path = dirpath + "/metadata.json"
+    # file exists?
+    if not os.path.exists(path):
+        return None
     with open(path, 'r', encoding='utf-8') as file:
         json_meta = json.load(file)
         metadata = {
