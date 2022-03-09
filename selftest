@@ -1,0 +1,10 @@
+#!/bin/bash
+cd $(dirname $0)
+
+source .venv/bin/activate
+echo "pylint ./perch"
+pylint ./perch
+echo "pylint ./tests"
+pylint ./tests
+echo "pytest tests"
+pytest tests
