@@ -67,17 +67,18 @@ def create_app(test_config=None):
     def render_admin():
         if request.method == "GET":
             return render_template("admin.html")
-        else:
-            if request.form["task"] == "update_db":
-                db.update_actress(current_session)
-                db.update_files(current_session)
-                db.update_count(current_session)
-                return f"""<html><body>{request.form["task"]} done!</body></html>"""
-            elif request.form["task"] == "drop_db":
-                db.drop_db(current_session)
-                return f"""<html><body>{request.form["task"]} done!</body></html>"""
-            else:
-                return f"""<html><body>{request.form["task"]}</body></html>"""
+        # POST section
+        if request.form["task"] == "update_db":
+            db.update_actress(current_session)
+            db.update_files(current_session)
+            db.update_count(current_session)
+            return f"""<html><body>{request.form["task"]} done!</body></html>"""
+
+        if request.form["task"] == "drop_db":
+            db.drop_db(current_session)
+            return f"""<html><body>{request.form["task"]} done!</body></html>"""
+
+        return f"""<html><body>unknown task : {request.form["task"]}</body></html>"""
 
     @app.route("/random")
     def jump_random():
