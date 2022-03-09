@@ -48,6 +48,10 @@ def test_rend_admin(client):
     assert b'drop_db' in received.data
     assert b'non-exist' not in received.data
 
+    received = client.post(
+        '/admin', data=dict(task='non-exist-task'), follow_redirects=True)
+    assert b'unknown task' in received.data
+
 
 def test_jump_random(client):
     """test random jump to player mech"""

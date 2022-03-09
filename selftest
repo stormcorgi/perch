@@ -1,10 +1,19 @@
 #!/bin/bash
-cd $(dirname $0)
+cd "$(dirname "$0")" || exit
 
 source .venv/bin/activate
 echo "pylint ./perch"
 pylint ./perch
+LINT1=$?
+
 echo "pylint ./tests"
 pylint ./tests
+LINT2=$?
+
 echo "pytest tests"
 pytest tests
+TEST1=$?
+
+if [ $LINT1 ] && [ $LINT2 ] && [ $TEST1 ]; then
+    echo "self test pass!"
+fi
