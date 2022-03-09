@@ -1,6 +1,5 @@
 """import pytest, sqlalchemy, app.perchdb, tests.conftest for CONST"""
 import pytest
-from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from perch.perchdb import Base, Actress, Movie, Tag, generate_engine
 from perch.perchdb import update_actress, update_files, drop_db
