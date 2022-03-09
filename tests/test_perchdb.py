@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import drop_database
 from perch.perchdb import Base, Actress, Movie, Tag
-from perch.perchdb import update_actress, update_files
+from perch.perchdb import update_actress, update_files, drop_db
 from tests.conftest import SAMPLE_LIB, SAMPLE_DB_PATH
 
 
@@ -23,14 +23,32 @@ def fixture_db():
     drop_database(SAMPLE_DB_PATH)
 
 
+# general
+
 def test_update_actress(db_session):
     """parse master metadata.json, update DB actress table"""
+    assert len(db_session.query(Actress).all()) == 0
     update_actress(db_session, SAMPLE_LIB, True)
+    assert len(db_session.query(Actress).all()) >= 1
 
 
 def test_update_files(db_session):
     """parse each file's metadata.json, update DB file,tag table"""
+    assert len(db_session.query(Movie).all()) == 0
     update_files(db_session, SAMPLE_LIB, True)
+    assert len(db_session.query(Movie).all()) is not 0
+
+
+def test_drop_db(db_session):
+    """test dropping db"""
+    update_actress(db_session, SAMPLE_LIB)
+    update_files(db_session, SAMPLE_LIB)
+    assert len(db_session.query(Actress).all()) >= 1
+    assert len(db_session.query(Movie).all()) is not 0
+    drop_db(db_session)
+    assert len(db_session.query(Actress).all()) is 0
+    assert len(db_session.query(Movie).all()) is 0
+
 
 # actress
 
@@ -94,6 +112,26 @@ def test_get_by_actress(db_session):
     update_files(db_session, SAMPLE_LIB, True)
     assert len(Movie.get_by_actress("L03BHPEH9SNKO", db_session)) == 5
     assert len(Movie.get_by_actress("non-exist-tag", db_session)) == 0
+
+
+def test_get_by_id(db_session):
+    """query by int: id(not actress id)"""
+    update_files(db_session, SAMPLE_LIB, True)
+    assert isinstance(Movie.get_by_id(3, db_session), Movie)
+    assert isinstance(Movie.get_by_id(99999, db_session), Movie) is False
+
+
+def test_count_all(db_session):
+    """COUNT query"""
+    update_files(db_session, SAMPLE_LIB, True)
+    assert Movie.count_all(db_session) >= 5
+
+
+def test_count_by_actress(db_session):
+    """count by actressid"""
+    update_files(db_session, SAMPLE_LIB, True)
+    assert Movie.count_by_actress("L03BHPEH9SNKO", db_session) == 5
+    assert Movie.count_by_actress("non-exist-tag", db_session) == 0
 
 
 # tag
