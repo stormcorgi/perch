@@ -3,7 +3,7 @@
 
 def test_rend_main(client):
     """load / , check page returned. check api same time"""
-    # client.post('/admin', data=dict(task='update_db'), follow_redirects=True)
+    client.post('/admin', data=dict(task='update_db'), follow_redirects=True)
     received = client.get('/')
     # print(received.data)
     assert b'neon' in received.data

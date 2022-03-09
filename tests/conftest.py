@@ -6,7 +6,7 @@ from perch import create_app
 
 file_path = os.path.dirname(__file__)
 SAMPLE_LIB = f"{file_path}/sample.library"
-SAMPLE_DB_PATH = f"sqlite:///{file_path}/test.sqlite"
+# SAMPLE_DB_PATH = f"sqlite://{file_path}/test.sqlite"
 
 
 @pytest.fixture(name="app")
@@ -15,7 +15,9 @@ def fixture_app():
     # create a temporary file to isolate the database for each test
     db_fd, db_path = tempfile.mkstemp()
     # create the app with common test config
-    app = create_app({"TESTING": True, "DATABASE": db_path})
+    app = create_app(
+        {"TESTING": True, "DATABASE": db_path, "LIB_PATH": SAMPLE_LIB})
+    app.post('/admin', data=dict(task='update_db'), follow_redirects=True)
 
     # create the database and load test data
     # with app.app_context():

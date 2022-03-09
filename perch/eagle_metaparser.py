@@ -1,31 +1,33 @@
 """os,json for parse metadata.json"""
 import json
 import os
+from flask import current_app
 
 
-def parse_actress_name_id(lib_path="./static/eagle_library"):
+def parse_actress_name_id():
     """returns {actressname: eagleid}"""
-    meta_path = lib_path + "/metadata.json"
-    actress_name_id = {}
+    with current_app.app_context():
+        meta_path = current_app.config['LIB_PATH'] + "/metadata.json"
+        actress_name_id = {}
 
-    with open(
-        meta_path,
-        'r',
-        encoding='utf-8'
-    ) as file:
-        json_meta = json.load(file)
-        # TODO adopt another folder structure. current: category - actress
-        folders = json_meta["folders"]
-        for folder in folders:
-            childrens = folder["children"]
-            for child in childrens:
-                actress_name_id[child["name"]] = child["id"]
-    return actress_name_id
+        with open(
+            meta_path,
+            'r',
+            encoding='utf-8'
+        ) as file:
+            json_meta = json.load(file)
+            # TODO adopt another folder structure. current: category - actress
+            folders = json_meta["folders"]
+            for folder in folders:
+                childrens = folder["children"]
+                for child in childrens:
+                    actress_name_id[child["name"]] = child["id"]
+        return actress_name_id
 
 
-def parse_all_tags(lib_path="./static/eagle_library"):
+def parse_all_tags():
     """returns ["tag name itself"]"""
-    meta_path = lib_path + "/metadata.json"
+    meta_path = current_app.config['LIB_PATH'] + "/metadata.json"
     taglist = []
     with open(
         meta_path,
@@ -54,10 +56,10 @@ def parse_file_metadata(dirpath):
     return metadata
 
 
-def parse_all_file_metadatas(lib_path="./static/eagle_library"):
+def parse_all_file_metadatas():
     """ scan every images folder and get each metadata """
     file_metadatas = []
-    path = f"{lib_path}/images"
+    path = f"{current_app.config['LIB_PATH']}/images"
     dirs = os.listdir(path=path)
     for tdir in dirs:
         targetpath = os.path.join(path, tdir)

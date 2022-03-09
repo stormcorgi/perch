@@ -7,7 +7,6 @@ from sqlalchemy.orm import sessionmaker
 from perch.eagle_metaparser import parse_actress_name_id, parse_all_file_metadatas
 
 file_path = os.path.dirname(__file__)
-LIB_PATH = f"{file_path}/static/eagle_library"
 engine = create_engine(
     f"sqlite:///{file_path}/../instance/perch.sqlite?check_same_thread=False")
 Base = declarative_base()
@@ -141,9 +140,9 @@ class Tag(Base):
 Base.metadata.create_all(engine)
 
 
-def update_actress(session=Session(), lib_path=LIB_PATH, quiet=False):
+def update_actress(session=Session(), quiet=False):
     """check metadata.json and update DB actress table"""
-    name_id_lists = parse_actress_name_id(lib_path)
+    name_id_lists = parse_actress_name_id()
     for name, actressid in name_id_lists.items():
         act = session.query(Actress).filter(
             Actress.actressid == actressid).all()
@@ -180,9 +179,9 @@ def update_filename(session, movs, item):
             session.commit()
 
 
-def update_files(session=Session(), lib_path=LIB_PATH, quiet=False):
+def update_files(session=Session(),  quiet=False):
     """check images/metadata.json and update DB movie,tag table"""
-    lists = parse_all_file_metadatas(lib_path)
+    lists = parse_all_file_metadatas()
     for lst in lists:
         for fileid, item in lst.items():
             update_tags(session, fileid, item)
