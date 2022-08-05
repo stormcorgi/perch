@@ -88,7 +88,10 @@ def create_app(test_config=None):
         total_movie_count = db.Movie.count_all(current_session)
         random_id = random.randint(0, total_movie_count)
         random_movie = db.Movie.get_by_id(random_id, current_session)
-        print(f"player?id={random_movie.fileid}&name={random_movie.filename}")
+        if random_movie is None:
+            return "<html><body>can't jump random: random item is null.</body></html>"
+        print(
+            f"player?id={random_movie.fileid}&name={random_movie.filename}")
         # <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
         return redirect(url_for("rend_player", id=random_movie.fileid, name=random_movie.filename))
 
