@@ -24,7 +24,7 @@ pycodestyle==2.8.0
 pyflakes==2.4.0
 pylint==2.12.2
 pyparsing==3.0.7
-pytest==7.0.1
+pytest==7.1.2
 pytest-cov==3.0.0
 six==1.16.0
 soupsieve==2.3.1
