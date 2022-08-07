@@ -33,6 +33,6 @@ SQLAlchemy-Utils==0.38.3
 toml==0.10.2
 tomli==2.0.1
 typing_extensions==4.3.0
-Werkzeug==2.0.3
+Werkzeug==2.2.1
 wrapt==1.14.1
 zipp==3.8.1
