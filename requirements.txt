@@ -34,5 +34,5 @@ toml==0.10.2
 tomli==2.0.1
 typing_extensions==4.1.1
 Werkzeug==2.0.3
-wrapt==1.13.3
+wrapt==1.14.1
 zipp==3.7.0
