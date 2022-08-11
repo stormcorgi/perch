@@ -189,6 +189,12 @@ def update_files(session,  quiet=False):
     """check images/metadata.json and update DB movie,tag table"""
     lists = parse_all_file_metadatas()
     for lst in lists:
+        try:
+            tmp = lst.items()
+        except AttributeError as e:
+            print(e)
+            continue
+
         for fileid, item in lst.items():
             update_tags(session, fileid, item)
 
