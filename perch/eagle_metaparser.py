@@ -1,6 +1,7 @@
 """os,json for parse metadata.json"""
 import json
 import os
+import logging
 from flask import current_app
 
 
@@ -8,6 +9,8 @@ def parse_actress_name_id():
     """returns {actressname: eagleid}, or return None when failed parse"""
     with current_app.app_context():
         meta_path = current_app.config['LIB_PATH'] + "/metadata.json"
+        logging.debug(
+            "  [DEBUG][parse_actress_name_id] meta_path = %s", meta_path)
         actress_name_id = {}
         # file exists?
         if not os.path.exists(meta_path):
@@ -52,8 +55,11 @@ def parse_file_metadata(dirpath):
     path = dirpath + "/metadata.json"
     # file exists?
     if not os.path.exists(path):
+        logging.warning(
+            "  [WARNING][parse_file_metadata] File not found on %s", path)
         return None
     with open(path, 'r', encoding='utf-8') as file:
+        logging.debug("  [DEBUG][parse_file_metadata] File found on %s", path)
         json_meta = json.load(file)
         metadata = {
             json_meta["id"]: {
@@ -62,6 +68,8 @@ def parse_file_metadata(dirpath):
                 "tags": json_meta["tags"]
             }
         }
+        logging.debug(
+            "  [DEBUG][parse_file_metadata] parsed metadata : %s", metadata)
     return metadata
 
 
@@ -74,7 +82,9 @@ def parse_all_file_metadatas():
         targetpath = os.path.join(path, tdir)
         if os.path.isdir(targetpath):
             try:
-                file_metadatas.append(parse_file_metadata(targetpath))
+                meta = parse_file_metadata(targetpath)
+                if meta is not None:
+                    file_metadatas.append(meta)
             except json.decoder.JSONDecodeError:
                 pass
             except FileNotFoundError:
