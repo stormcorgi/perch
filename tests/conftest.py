@@ -19,6 +19,10 @@ def fixture_app():
     app = create_app(
         {"TESTING": True, "DATABASE": db_path, "LIB_PATH": SAMPLE_LIB})
 
+    # debug using real Env
+    # app = create_app(
+    #    {"TESTING": False})
+
     # print(db_path)
     # print(os.path.exists(db_path))
     # create the database and load test data
