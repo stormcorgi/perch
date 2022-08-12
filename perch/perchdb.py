@@ -1,4 +1,5 @@
 """manipulate perch.db with sqlalchemy, parse metadata with eagle_metaparser.py"""
+import logging
 from sqlalchemy import create_engine, Column, String, Integer
 from sqlalchemy import distinct
 from sqlalchemy.ext.declarative import declarative_base
@@ -10,7 +11,8 @@ Base = declarative_base()
 
 def generate_engine(file_path):
     """require file_path(/some/path/dbname.sqlite)"""
-    # print(f"engine generate -> sqlite:///{file_path}?check_same_thread=False")
+    logging.debug(
+        "engine generate -> sqlite:///%s?check_same_thread=False", file_path)
     return create_engine(
         f"sqlite:///{file_path}?check_same_thread=False")
 
@@ -22,7 +24,7 @@ def generate_session(file_path):
 
 def init_db(file_path):
     """init db with app_context"""
-    # print(f"start init_db on {file_path}")
+    logging.debug("start init_db on %s", file_path)
     engine = generate_engine(file_path)
     # create DB tables inherited Base
     Base.metadata.create_all(engine)
@@ -146,16 +148,14 @@ class Tag(Base):
         return session.query(cls).filter(cls.fileid == fileid).all()
 
 
-def update_actress(session, quiet=False):
+def update_actress(session):
     """check metadata.json and update DB actress table"""
     name_id_lists = parse_actress_name_id()
     for name, actressid in name_id_lists.items():
         act = session.query(Actress).filter(
             Actress.actressid == actressid).all()
         if not act:
-            if not quiet:
-                print("=== " + name + " ===")
-                print("id : " + actressid)
+            logging.debug("%s : %s", name, actressid)
             actress_sql = Actress(name=name, actressid=actressid)
             session.add(actress_sql)
             session.commit()
@@ -179,20 +179,22 @@ def update_filename(session, movs, item):
     """file exist, update required?"""
     for mov in movs:
         if mov.filename != item["filename"]:
-            print(
-                f"file name changed ! {mov.filename} -> {item['filename']}")
+            logging.info(
+                "file name changed ! %s -> %s", mov.filename, item['filename'])
             mov.filename = item["filename"]
             session.commit()
 
 
-def update_files(session,  quiet=False):
+def update_files(session):
     """check images/metadata.json and update DB movie,tag table"""
     lists = parse_all_file_metadatas()
     for lst in lists:
+        logging.debug(" [DEBUG] lst = %s", lst)
         try:
-            tmp = lst.items()
-        except AttributeError as e:
-            print(e)
+            lst.items()
+        except AttributeError as attribute_e:
+            logging.warning(" [WARNING] Attribute Error occured on %s", lst)
+            logging.warning(" [WARNING] %s", attribute_e)
             continue
 
         for fileid, item in lst.items():
@@ -204,12 +206,11 @@ def update_files(session,  quiet=False):
                 movs = session.query(Movie).filter(
                     Movie.fileid == fileid, Movie.actressid == i).all()
                 if not movs:
-                    if not quiet:
-                        print("=== fileid : " + fileid + " ===")
-                        print(" - filename - > " + item["filename"])
-                        print(" - actress -- > " + i)
-                        print(" - tags - ")
-                        print(item["tags"])
+                    logging.debug("id : %s ", fileid)
+                    logging.debug(" - filename - > %s", item["filename"])
+                    logging.debug(" - actress -- > %s", i)
+                    logging.debug(" - tags - ")
+                    logging.debug("    - %s", item["tags"])
                     mov_sql = Movie(
                         fileid=fileid, filename=item["filename"], actressid=i)
                     session.add(mov_sql)
