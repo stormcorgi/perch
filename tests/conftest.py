@@ -6,10 +6,6 @@ from perch import create_app
 from perch.db.connection import init_db
 import perch.config as config
 
-# file_path = os.path.dirname(__file__)
-# SAMPLE_LIB = f"{file_path}/sample.library"
-# SAMPLE_DB_PATH = f"sqlite://{file_path}/test.sqlite"
-
 
 @pytest.fixture(name="app")
 def fixture_app():
