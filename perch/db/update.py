@@ -18,6 +18,7 @@ def update_actress(session):
             actress_sql = Actress(name=name, actressid=actressid)
             session.add(actress_sql)
             session.commit()
+            logging.debug("  [DEBUG][DB][actress] %s", actress_sql)
 
 
 def update_tags(session, fileid, item):
@@ -32,6 +33,7 @@ def update_tags(session, fileid, item):
             tag_sql = Tag(fileid=fileid, tag=tag)
             session.add(tag_sql)
             session.commit()
+            logging.debug("  [DEBUG][DB][tags] %s", tag_sql)
 
 
 def update_filename(session, movs, item):
@@ -74,6 +76,7 @@ def update_files(session):
                         fileid=fileid, filename=item["filename"], actressid=i)
                     session.add(mov_sql)
                     session.commit()
+                    logging.debug("  [DEBUG][DB][files] %s", mov_sql)
                 else:
                     update_filename(session, movs, item)
 
@@ -83,6 +86,7 @@ def update_count(session):
     actresses = Actress.all(session)
     for actress in actresses:
         actress.count = Movie.count_by_actress(actress.actressid, session)
+        logging.debug("  [DEBUG][DB][count] %s", actress.count)
         session.commit()
 
 
