@@ -11,9 +11,7 @@ import perch.config as config
 start_dt = datetime.datetime.now()
 start_str = start_dt.strftime('%Y%m%d-%H')
 logging.basicConfig(filename=f"./log/perch-{start_str}.log",
-                    encoding="utf-8",
-                    format='%(asctime)s %(message)s',
-                    level=logging.DEBUG)
+                    format='%(asctime)s %(message)s')
 
 
 def create_app():
