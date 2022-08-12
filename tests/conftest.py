@@ -1,10 +1,7 @@
 """generate fixtures"""
-# import os
-# import tempfile
 import pytest
 from perch import create_app
 from perch.db.connection import init_db
-import perch.config as config
 
 
 @pytest.fixture(name="app")
