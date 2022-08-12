@@ -2,7 +2,7 @@
 import logging
 from sqlalchemy.ext.declarative import declarative_base
 from perch.parser.eagle import parse_actress_name_id, parse_all_file_metadatas
-from perch.db.connection import *
+from perch.db.connection import Actress, Tag, Movie
 
 Base = declarative_base()
 
