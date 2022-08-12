@@ -1,0 +1,25 @@
+import os
+PROD_LIB = "/path/to/library"
+PROD_DB = os.path.join(os.getcwd(), "instance/perch.sqlite")
+
+DEV_LIB = os.path.join(os.getcwd(), "tests/sample.library")
+DEV_DB = os.path.join(os.getcwd(), "tests/perch.sqlite")
+
+
+class Development(object):
+    DEBUG = True
+    DATABASE = DEV_DB
+    LIB_PATH = DEV_LIB
+
+
+class Testing(object):
+    DEBUG = True
+    # LIB_PATH = PROD_LIB
+    LIB_PATH = DEV_LIB
+    DATABASE = DEV_DB
+
+
+class Production(object):
+    DEBUG = False
+    DATABASE = PROD_DB
+    LIB_PATH = PROD_LIB

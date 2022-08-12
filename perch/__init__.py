@@ -6,6 +6,7 @@ import datetime
 from flask import render_template, Flask, request, redirect, url_for
 import perch.db.connection as dbcon
 import perch.db.update as dbup
+import perch.config as config
 
 start_dt = datetime.datetime.now()
 start_str = start_dt.strftime('%Y%m%d-%H')
@@ -15,20 +16,27 @@ logging.basicConfig(filename=f"./log/perch-{start_str}.log",
                     level=logging.DEBUG)
 
 
-def create_app(test_config=None):
+def create_app():
     """Create and configure an instance of flask app"""
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        DATABASE=os.path.join(
-            app.instance_path, "perch.sqlite"),
-        LIB_PATH="/mnt/nasne/videos.library"
-        # LIB_PATH=os.path.join( app.instance_path, "../perch/static/eagle_library")
-    )
+    # app.config.from_mapping(
+    #     DATABASE=os.path.join(
+    #         app.instance_path, "perch.sqlite"),
+    #     LIB_PATH="/mnt/nasne/videos.library"
+    #     # LIB_PATH=os.path.join( app.instance_path, "../perch/static/eagle_library")
+    # )
+
+    config_type = {
+        "development": "perch.config.Development",
+        "testing": "perch.config.Testing",
+        "production": "perch.config.Production"
+    }
+    logging.info("ENV : %s", os.getenv('FLASK_APP_ENV', 'production'))
+
+    app.config.from_object(config_type.get(
+        os.getenv('FLASK_APP_ENV', 'production')))
 
     logging.info("app generate start...")
-
-    if test_config is not None:
-        app.config.update(test_config)
 
     logging.debug("DB => %s", app.config['DATABASE'])
     logging.debug("LIB_PATH => %s", app.config['LIB_PATH'])
