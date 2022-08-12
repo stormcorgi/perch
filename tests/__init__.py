@@ -1,3 +1,4 @@
+""" for tests environment logger configuration """
 import logging
 import datetime
 

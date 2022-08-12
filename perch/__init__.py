@@ -6,7 +6,7 @@ import datetime
 from flask import render_template, Flask, request, redirect, url_for
 import perch.db.connection as dbcon
 import perch.db.update as dbup
-import perch.config as config
+from perch import config
 
 start_dt = datetime.datetime.now()
 start_str = start_dt.strftime('%Y%m%d-%H')
