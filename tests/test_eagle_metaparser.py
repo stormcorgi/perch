@@ -1,6 +1,6 @@
 """load eagle_metaparser, tests.conftest for static path"""
-from perch.eagle_metaparser import parse_actress_name_id, parse_all_tags
-from perch.eagle_metaparser import parse_file_metadata, parse_all_file_metadatas
+from perch.parser.eagle import parse_actress_name_id, parse_all_tags
+from perch.parser.eagle import parse_file_metadata, parse_all_file_metadatas
 
 
 def test_parse_actress_name_id(app):

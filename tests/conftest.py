@@ -3,7 +3,7 @@ import os
 import tempfile
 import pytest
 from perch import create_app
-from perch.perchdb import init_db
+from perch.db.connection import init_db
 
 file_path = os.path.dirname(__file__)
 SAMPLE_LIB = f"{file_path}/sample.library"

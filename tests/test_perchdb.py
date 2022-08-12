@@ -1,8 +1,8 @@
 """import pytest, sqlalchemy, app.perchdb, tests.conftest for CONST"""
 import pytest
 from sqlalchemy.orm import sessionmaker
-from perch.perchdb import Base, Actress, Movie, Tag, generate_engine
-from perch.perchdb import update_actress, update_files, drop_db
+from perch.db.connection import Base, Actress, Movie, Tag, generate_engine
+from perch.db.update import update_actress, update_files, drop_db
 
 
 @pytest.fixture(name="db_session")
