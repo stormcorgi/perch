@@ -111,6 +111,11 @@ def update_count(session):
     for actress in actresses:
         actress.count = Movie.count_by_actress(actress.actressid, session)
         logging.debug("  [DEBUG][DB][count] %s", actress.count)
+
+        first_movie = Movie.get_first_by_actress(actress.actressid, session)
+        actress.facepath = f"{first_movie.fileid}.info/{first_movie.filename}_thumbnail.png"
+        logging.debug("  [DEBUG][DB][facepath] %s", actress.facepath)
+
         session.commit()
 
 

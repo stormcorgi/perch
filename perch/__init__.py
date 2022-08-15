@@ -9,7 +9,7 @@ import perch.db.update as dbup
 
 start_dt = datetime.datetime.now()
 start_str = start_dt.strftime('%Y%m%d-%H')
-logging.basicConfig(filename=f"./log/perch-{start_str}.log",
+logging.basicConfig(level=logging.INFO, filename=f"./log/perch-{start_str}.log",
                     format='%(asctime)s %(message)s')
 
 
@@ -85,9 +85,9 @@ def create_app():
             return render_template("admin.html")
         # POST section
         if request.form["task"] == "update_db":
-            t = dbup.UpdateThread(app, current_session)
-            t.start()
-            return f"""<html><body>request queued.</body></html>"""
+            thread = dbup.UpdateThread(app, current_session)
+            thread.start()
+            return """<html><body>request queued.</body></html>"""
 
         if request.form["task"] == "drop_db":
             dbup.drop_db(current_session)

@@ -15,6 +15,8 @@
             {% for actress in actresses %}
             {% if loop.index % 3 == 0 %}
             <div class="col">
+                <img class="img-thumbnail img-responsive"
+                    src="../static/eagle_library/{{actress.facepath}}">
                 <a href="actress/{{actress.name}}" class="text-nowrap">{{actress.name}}<p
                         class="small text-muted text-nowrap">({{actress.count}})</p>
                 </a>
@@ -23,6 +25,8 @@
         <div class="row">
             {% else %}
             <div class="col">
+                <img class="img-thumbnail img-responsive"
+                    src="../static/eagle_library/images/{{actress.facepath}}">
                 <a href="actress/{{actress.name}}" class="text-nowrap">{{actress.name}}<p
                         class="small text-muted text-nowrap">({{actress.count}})</p>
                 </a>

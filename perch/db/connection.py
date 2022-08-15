@@ -36,9 +36,10 @@ class Actress(Base):
     actressid = Column(String)
     name = Column(String)
     count = Column(Integer)
+    facepath = Column(String)
 
     def __repr__(self):
-        return f"Actress<{self.id},{self.actressid},{self.name},{self.count}>"
+        return f"Actress<{self.id},{self.actressid},{self.name},{self.count},{self.facepath}>"
 
     @classmethod
     def all(cls, session):
@@ -102,6 +103,11 @@ class Movie(Base):
         """Query DB, return all Movie that actress appear"""
         return session.query(cls).filter(
             cls.actressid == actressid).all()
+
+    @classmethod
+    def get_first_by_actress(cls, actressid, session):
+        """Query DB, return first Movie that actress appear"""
+        return session.query(cls).filter(cls.actressid == actressid).first()
 
     @classmethod
     def count_by_actress(cls, search_actressid, session):
