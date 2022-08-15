@@ -1,10 +1,34 @@
 """manipulate perch.db with sqlalchemy, parse metadata with eagle_metaparser.py"""
 import logging
+import threading
 from sqlalchemy.ext.declarative import declarative_base
 from perch.parser.eagle import parse_actress_name_id, parse_all_file_metadatas
 from perch.db.connection import Actress, Tag, Movie
 
 Base = declarative_base()
+
+
+class UpdateThread(threading.Thread):
+    """ for execute update_db on background(another thread) """
+
+    def __init__(self, app, session):
+        super(UpdateThread, self).__init__()
+        self.stop_event = threading.Event()
+        self.app = app
+        self.session = session
+
+    def stop(self):
+        """ stop update_db on another thread"""
+        self.stop_event.set()
+
+    def run(self):
+        with self.app.app_context():
+            try:
+                update_actress(self.session)
+                update_files(self.session)
+                update_count(self.session)
+            finally:
+                logging.info("DB update done!")
 
 
 def update_actress(session):

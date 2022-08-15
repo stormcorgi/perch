@@ -85,10 +85,9 @@ def create_app():
             return render_template("admin.html")
         # POST section
         if request.form["task"] == "update_db":
-            dbup.update_actress(current_session)
-            dbup.update_files(current_session)
-            dbup.update_count(current_session)
-            return f"""<html><body>{request.form["task"]} done!</body></html>"""
+            t = dbup.UpdateThread(app, current_session)
+            t.start()
+            return f"""<html><body>request queued.</body></html>"""
 
         if request.form["task"] == "drop_db":
             dbup.drop_db(current_session)
