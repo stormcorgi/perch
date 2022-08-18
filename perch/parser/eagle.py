@@ -59,12 +59,12 @@ def parse_file_metadata(dirpath):
     # file exists?
     if not os.path.exists(path):
         logging.warning(
-            "  [WARNING][parse_file_metadata] File not found on %s", path)
+            "  [WARNING][parse] File not found on %s", path)
         return None
 
     logging.debug("  [DEBUG][file open]")
     with open(path, 'r', encoding='utf-8') as file:
-        logging.debug("  [DEBUG][parse_file_metadata] File found on %s", path)
+        logging.debug("  [DEBUG][parse] File found on %s", path)
         json_meta = json.load(file)
         metadata = {
             json_meta["id"]: {
