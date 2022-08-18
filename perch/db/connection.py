@@ -44,7 +44,7 @@ class Actress(Base):
     @classmethod
     def all(cls, session):
         """Query Actress table and return all Actress object"""
-        return session.query(cls).all()
+        return session.query(cls).order_by(cls.name).all()
 
     @classmethod
     def get_by_name(cls, name, session):
