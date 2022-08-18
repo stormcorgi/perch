@@ -16,7 +16,6 @@ class UpdateThread(threading.Thread):
         self.stop_event = threading.Event()
         self.app = app
         self.session = session
-        self.meta = parse_all_file_metadatas()
 
     def stop(self):
         """ stop update_db on another thread"""
@@ -25,9 +24,10 @@ class UpdateThread(threading.Thread):
     def run(self):
         with self.app.app_context():
             try:
+                meta = parse_all_file_metadatas()
                 update_actress(self.session)
-                update_newfiles(self.session, self.meta)
-                update_tags(self.session, self.meta)
+                update_newfiles(self.session, meta)
+                update_tags(self.session, meta)
                 update_count(self.session)
             finally:
                 logging.info("DB update done!")
@@ -49,8 +49,10 @@ def update_actress(session):
         logging.debug("  [DEBUG][DB][actress] %s", target)
 
 
-def update_tags(session, meta=parse_all_file_metadatas()):
+def update_tags(session, meta=None):
     """used in update_files, update tag datas"""
+    if meta is None:
+        meta = parse_all_file_metadatas()
     json_tag_set = set([t
                        for d in meta for _, v in d.items() for t in v["tags"]])
     on_db_tags_set = set([t.tag for t in session.query(Tag).all()])
@@ -73,8 +75,11 @@ def update_filename(session, movs, item):
             session.commit()
 
 
-def update_newfiles(session, meta=parse_all_file_metadatas()):
+def update_newfiles(session, meta=None):
     """check images/metadata.json and update DB movie,tag table"""
+    if meta is None:
+        meta = parse_all_file_metadatas()
+
     json_fileids = set(
         [fileid for d in meta for fileid, _ in d.items()])
 
