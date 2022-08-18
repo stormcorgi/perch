@@ -103,15 +103,19 @@ def update_newfiles(session):
 def update_count(session):
     """check all actress data and set count number"""
     actresses = Actress.all(session)
+    targets = []
     for actress in actresses:
         actress.count = Movie.count_by_actress(actress.actressid, session)
-        logging.debug("  [DEBUG][DB][count] %s", actress.count)
+        logging.debug("  [DEBUG][DB][count] %s : %s",
+                      actress.name, actress.count)
 
         first_movie = Movie.get_first_by_actress(actress.actressid, session)
         actress.facepath = f"{first_movie.fileid}.info/{first_movie.filename}_thumbnail.png"
         logging.debug("  [DEBUG][DB][facepath] %s", actress.facepath)
 
-        session.commit()
+        targets.append(actress)
+    session.add_all(targets)
+    session.commit()
 
 
 def drop_db(session):
