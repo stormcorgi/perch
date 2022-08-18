@@ -16,6 +16,7 @@ class UpdateThread(threading.Thread):
         self.stop_event = threading.Event()
         self.app = app
         self.session = session
+        self.meta = parse_all_file_metadatas()
 
     def stop(self):
         """ stop update_db on another thread"""
@@ -25,8 +26,8 @@ class UpdateThread(threading.Thread):
         with self.app.app_context():
             try:
                 update_actress(self.session)
-                update_newfiles(self.session)
-                update_tags(self.session)
+                update_newfiles(self.session, self.meta)
+                update_tags(self.session, self.meta)
                 update_count(self.session)
             finally:
                 logging.info("DB update done!")
@@ -48,17 +49,16 @@ def update_actress(session):
         logging.debug("  [DEBUG][DB][actress] %s", target)
 
 
-def update_tags(session):
+def update_tags(session, meta=parse_all_file_metadatas()):
     """used in update_files, update tag datas"""
-    json_parsed_datas = parse_all_file_metadatas()
     json_tag_set = set([t
-                       for d in json_parsed_datas for _, v in d.items() for t in v["tags"]])
+                       for d in meta for _, v in d.items() for t in v["tags"]])
     on_db_tags_set = set([t.tag for t in session.query(Tag).all()])
 
     target_tags = json_tag_set - on_db_tags_set
 
     targets = [Tag(fileid=k, tag=t)
-               for d in json_parsed_datas for k, v in d.items() for t in v["tags"] if t in target_tags]
+               for d in meta for k, v in d.items() for t in v["tags"] if t in target_tags]
     session.add_all(targets)
     session.commit()
 
@@ -73,11 +73,10 @@ def update_filename(session, movs, item):
             session.commit()
 
 
-def update_newfiles(session):
+def update_newfiles(session, meta=parse_all_file_metadatas()):
     """check images/metadata.json and update DB movie,tag table"""
-    json_parsed_datas = parse_all_file_metadatas()
     json_fileids = set(
-        [fileid for d in json_parsed_datas for fileid, _ in d.items()])
+        [fileid for d in meta for fileid, _ in d.items()])
 
     on_db_movies_dict = {
         m.fileid: m.filename for m in session.query(Movie).all()}
@@ -87,7 +86,7 @@ def update_newfiles(session):
     if target_movies_set == []:
         return
 
-    targets_dicts = {k: v for d in json_parsed_datas
+    targets_dicts = {k: v for d in meta
                      for k, v in d.items()
                      if k in target_movies_set}
 
