@@ -25,7 +25,8 @@ class UpdateThread(threading.Thread):
         with self.app.app_context():
             try:
                 update_actress(self.session)
-                update_files(self.session)
+                update_newfiles(self.session)
+                update_tags(self.session)
                 update_count(self.session)
             finally:
                 logging.info("DB update done!")
@@ -47,19 +48,19 @@ def update_actress(session):
         logging.debug("  [DEBUG][DB][actress] %s", target)
 
 
-def update_tags(session, fileid, item):
+def update_tags(session):
     """used in update_files, update tag datas"""
-    # put tag DB to fileid
-    for tag in item["tags"]:
-        # if tag is already exist, pass
-        # TODO if tag deleted, record still exist...
-        current_tags = session.query(Tag).filter(
-            Tag.fileid == fileid, Tag.tag == tag).all()
-        if not current_tags:
-            tag_sql = Tag(fileid=fileid, tag=tag)
-            session.add(tag_sql)
-            session.commit()
-            logging.debug("  [DEBUG][DB][tags] %s", tag_sql)
+    json_parsed_datas = parse_all_file_metadatas()
+    json_tag_set = set([t
+                       for d in json_parsed_datas for _, v in d.items() for t in v["tags"]])
+    on_db_tags_set = set([t.tag for t in session.query(Tag).all()])
+
+    target_tags = json_tag_set - on_db_tags_set
+
+    targets = [Tag(fileid=k, tag=t)
+               for d in json_parsed_datas for k, v in d.items() for t in v["tags"] if t in target_tags]
+    session.add_all(targets)
+    session.commit()
 
 
 def update_filename(session, movs, item):
@@ -72,39 +73,31 @@ def update_filename(session, movs, item):
             session.commit()
 
 
-def update_files(session):
+def update_newfiles(session):
     """check images/metadata.json and update DB movie,tag table"""
-    lists = parse_all_file_metadatas()
-    for lst in lists:
-        logging.debug(" [DEBUG] lst = %s", lst)
-        try:
-            lst.items()
-        except AttributeError as attribute_e:
-            logging.warning(" [WARNING] Attribute Error occured on %s", lst)
-            logging.warning(" [WARNING] %s", attribute_e)
-            continue
+    json_parsed_datas = parse_all_file_metadatas()
+    json_fileids = set(
+        [fileid for d in json_parsed_datas for fileid, _ in d.items()])
 
-        for fileid, item in lst.items():
-            update_tags(session, fileid, item)
+    on_db_movies_dict = {
+        m.fileid: m.filename for m in session.query(Movie).all()}
 
-            # TODO each actressid, put movie record. strange SQL usage?
-            for i in item["actressid"]:
-                # if data is already exist(fileid AND actressid), pass
-                movs = session.query(Movie).filter(
-                    Movie.fileid == fileid, Movie.actressid == i).all()
-                if not movs:
-                    logging.debug("id : %s ", fileid)
-                    logging.debug(" - filename - > %s", item["filename"])
-                    logging.debug(" - actress -- > %s", i)
-                    logging.debug(" - tags - ")
-                    logging.debug("    - %s", item["tags"])
-                    mov_sql = Movie(
-                        fileid=fileid, filename=item["filename"], actressid=i)
-                    session.add(mov_sql)
-                    session.commit()
-                    logging.debug("  [DEBUG][DB][files] %s", mov_sql)
-                else:
-                    update_filename(session, movs, item)
+    target_movies_set = json_fileids - on_db_movies_dict.keys()
+
+    if target_movies_set == []:
+        return
+
+    targets_dicts = {k: v for d in json_parsed_datas
+                     for k, v in d.items()
+                     if k in target_movies_set}
+
+    # FIXME アイテムを多重登録している
+    targets = [Movie(fileid=k, filename=v["filename"],
+                     actressid=i)
+               for k, v in targets_dicts.items()
+               for i in v["actressid"]]
+    session.add_all(targets)
+    session.commit()
 
 
 def update_count(session):

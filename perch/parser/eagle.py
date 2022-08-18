@@ -54,7 +54,7 @@ def parse_all_tags():
 
 
 def parse_file_metadata(dirpath):
-    """returns {fileid : filename}, or return None when failed parse"""
+    """returns {fileid:{filename: ,actressid: , tags: }}, or return None when failed parse"""
     path = dirpath + "/metadata.json"
     # file exists?
     if not os.path.exists(path):
@@ -79,7 +79,7 @@ def parse_file_metadata(dirpath):
 
 
 def parse_all_file_metadatas():
-    """ scan every images folder and get each metadata """
+    """ scan every images folder and get each metadata [{fileid:{filename:- ,actressid:- ,tags: }}, ...] """
     file_metadatas = []
     path = f"{current_app.config['LIB_PATH']}/images"
     dirs = os.listdir(path=path)

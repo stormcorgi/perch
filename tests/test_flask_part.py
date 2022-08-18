@@ -1,28 +1,25 @@
 """start flask(FLASKAPP=perch)"""
+import time
 
 
 def test_rend_main(client):
     """load / , check page returned. check api same time"""
+    # FIXME init db before flask_part tests...
     client.post('/admin', data=dict(task='update_db'), follow_redirects=True)
+    time.sleep(2)
     received = client.get('/')
     # print(received.data)
     assert b'neon' in received.data
 
-    client.post('/admin', data=dict(task='drop_db'), follow_redirects=True)
-    received = client.get('/')
-    assert b'neon' not in received.data
-
 
 def test_rend_actress(client):
     """load /actress/<name>, get some data..."""
-    client.post('/admin', data=dict(task='update_db'), follow_redirects=True)
     received = client.get('/actress/nature')
     assert b'bTTZ' in received.data
 
 
 def test_rend_tag(client):
     """render tag page"""
-    client.post('/admin', data=dict(task='update_db'), follow_redirects=True)
     received = client.get('/tag/forest')
     assert b'Pz3th' in received.data
     assert b'bTTZ' in received.data
@@ -32,7 +29,6 @@ def test_rend_tag(client):
 
 def test_rend_player(client):
     """load /player, get player"""
-    client.post('/admin', data=dict(task='update_db'), follow_redirects=True)
     received = client.get('player?id=L03BG2NLRKV5A&name=8Qgtq880d18')
     assert b'chill' in received.data
     assert b'daylight' in received.data
@@ -55,7 +51,6 @@ def test_rend_admin(client):
 
 def test_jump_random(client):
     """test random jump to player mech"""
-    client.post('/admin', data=dict(task='update_db'), follow_redirects=True)
     received = client.get('/random')
     assert received.status_code == 302
     assert b'Redirecting...' in received.data

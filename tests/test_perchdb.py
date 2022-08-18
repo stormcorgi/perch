@@ -2,7 +2,7 @@
 import pytest
 from sqlalchemy.orm import sessionmaker
 from perch.db.connection import Base, Actress, Movie, Tag, generate_engine
-from perch.db.update import update_actress, update_files, drop_db
+from perch.db.update import update_actress, update_newfiles, update_tags, drop_db
 
 
 @pytest.fixture(name="db_session")
@@ -29,18 +29,18 @@ def test_update_actress(db_session):
     assert len(db_session.query(Actress).all()) >= 1
 
 
-def test_update_files(db_session):
+def test_update_newfiles(db_session):
     """parse each file's metadata.json, update DB file,tag table"""
     drop_db(db_session)
     assert len(db_session.query(Movie).all()) == 0
-    update_files(db_session)
+    update_newfiles(db_session)
     assert len(db_session.query(Movie).all()) != 0
 
 
 def test_drop_db(db_session):
     """test dropping db"""
     update_actress(db_session)
-    update_files(db_session)
+    update_newfiles(db_session)
     assert len(db_session.query(Actress).all()) >= 1
     assert len(db_session.query(Movie).all()) != 0
     drop_db(db_session)
@@ -83,7 +83,7 @@ def test_actress_get_by_id(db_session):
 def test_actress_get_by_movie(db_session):
     """query Movie table by fileid, return all Actress object"""
     update_actress(db_session)
-    update_files(db_session)
+    update_newfiles(db_session)
     movies = Actress.get_by_movie("L03BG2NK1ERKW", db_session)
     assert len(movies) == 2
     for movie in movies:
@@ -94,40 +94,42 @@ def test_actress_get_by_movie(db_session):
 
 def test_movie_all(db_session):
     """update_files, then query all Movie, it must return some records"""
-    update_files(db_session)
+    update_newfiles(db_session)
     assert len(Movie.all(db_session)) >= 5
 
 
 def test_get_by_tag(db_session):
     """update_files, then query all Movie by Tag, return matched Movies """
-    update_files(db_session)
+    update_actress(db_session)
+    update_newfiles(db_session)
+    update_tags(db_session)
     assert len(Movie.get_by_tag("forest", db_session)) == 2
     assert len(Movie.get_by_tag("non-exist-tag", db_session)) == 0
 
 
 def test_get_by_actress(db_session):
     """update_files, then query all Movie by Actress, return matched Movies """
-    update_files(db_session)
+    update_newfiles(db_session)
     assert len(Movie.get_by_actress("L03BHPEH9SNKO", db_session)) == 5
     assert len(Movie.get_by_actress("non-exist-tag", db_session)) == 0
 
 
 def test_get_by_id(db_session):
     """query by int: id(not actress id)"""
-    update_files(db_session)
+    update_newfiles(db_session)
     assert isinstance(Movie.get_by_id(3, db_session), Movie)
     assert isinstance(Movie.get_by_id(99999, db_session), Movie) is False
 
 
 def test_count_all(db_session):
     """COUNT query"""
-    update_files(db_session)
+    update_newfiles(db_session)
     assert Movie.count_all(db_session) >= 5
 
 
 def test_count_by_actress(db_session):
     """count by actressid"""
-    update_files(db_session)
+    update_newfiles(db_session)
     assert Movie.count_by_actress("L03BHPEH9SNKO", db_session) == 5
     assert Movie.count_by_actress("non-exist-tag", db_session) == 0
 
@@ -136,12 +138,14 @@ def test_count_by_actress(db_session):
 
 def test_tag_all(db_session):
     """update_files, then query all Tag, it must return some records"""
-    update_files(db_session)
+    update_newfiles(db_session)
+    update_tags(db_session)
     assert len(Tag.all(db_session)) >= 5
 
 
 def test_get_by_movie(db_session):
     """update_files, then query all Tag by Movie, return matched Tags """
-    update_files(db_session)
+    update_newfiles(db_session)
+    update_tags(db_session)
     assert len(Tag.get_by_movie("L03BG2NLRKV5A", db_session)) == 2
     assert len(Tag.get_by_movie("non-exist-tag", db_session)) == 0
