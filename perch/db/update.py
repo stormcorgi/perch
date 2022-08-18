@@ -33,16 +33,18 @@ class UpdateThread(threading.Thread):
 
 def update_actress(session):
     """check metadata.json and update DB actress table"""
-    name_id_lists = parse_actress_name_id()
-    for name, actressid in name_id_lists.items():
-        act = session.query(Actress).filter(
-            Actress.actressid == actressid).all()
-        if not act:
-            logging.debug("%s : %s", name, actressid)
-            actress_sql = Actress(name=name, actressid=actressid)
-            session.add(actress_sql)
-            session.commit()
-            logging.debug("  [DEBUG][DB][actress] %s", actress_sql)
+    on_db_actresses_dict = {a.name: a.actressid
+                            for a in session.query(Actress).all()}
+
+    json_name_id_dict = parse_actress_name_id()
+    target_actress = json_name_id_dict.keys() - on_db_actresses_dict.keys()
+
+    if target_actress != []:
+        target = [Actress(name=name, actressid=actressid)
+                  for name, actressid in json_name_id_dict.items() if name in target_actress]
+        session.add_all(target)
+        session.commit()
+        logging.debug("  [DEBUG][DB][actress] %s", target)
 
 
 def update_tags(session, fileid, item):

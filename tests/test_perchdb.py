@@ -25,6 +25,8 @@ def test_update_actress(db_session):
     assert len(db_session.query(Actress).all()) == 0
     update_actress(db_session)
     assert len(db_session.query(Actress).all()) >= 1
+    update_actress(db_session)
+    assert len(db_session.query(Actress).all()) >= 1
 
 
 def test_update_files(db_session):
