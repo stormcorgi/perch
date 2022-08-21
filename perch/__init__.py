@@ -47,7 +47,8 @@ def create_app():
         return render_template(
             "main.html",
             actresses=dbcon.Actress.all(current_session),
-            tags=dbcon.Tag.all(current_session)
+            tags=dbcon.Tag.all(current_session),
+            lib_path=app.config["LIB_PATH"]
         )
 
     @app.route("/actress/<name>")
@@ -55,13 +56,13 @@ def create_app():
         """render actress page"""
         actress = dbcon.Actress.get_by_name(name, current_session)
         movies = dbcon.Movie.get_by_actress(actress.actressid, current_session)
-        return render_template("actress.html", actress=actress, movies=movies)
+        return render_template("actress.html", actress=actress, movies=movies, lib_path=app.config["LIB_PATH"])
 
     @app.route("/tag/<tag>")
     def rend_tag(tag):
         """render tag page"""
         movies = dbcon.Movie.get_by_tag(tag, current_session)
-        return render_template("tags.html", tag=tag, movies=movies)
+        return render_template("tags.html", tag=tag, movies=movies, lib_path=app.config["LIB_PATH"])
 
     @app.route("/player")
     def rend_player():
@@ -76,7 +77,8 @@ def create_app():
             filepath=filepath,
             filename=filename,
             actresses=actresses,
-            tags=tags
+            tags=tags,
+            lib_path=app.config["LIB_PATH"]
         )
 
     @app.route("/admin", methods=["GET", "POST"])
