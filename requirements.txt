@@ -1,6 +1,6 @@
 astroid==2.11.7
 attrs==22.1.0
-autopep8==1.6.0
+autopep8==2.0.0
 beautifulsoup4==4.11.1
 bs4==0.0.1
 certifi==2022.6.15
