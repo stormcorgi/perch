@@ -1,4 +1,4 @@
-astroid==2.11.7
+astroid==2.14.1
 attrs==22.1.0
 autopep8==1.6.0
 beautifulsoup4==4.11.1
