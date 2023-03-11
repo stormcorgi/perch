@@ -133,4 +133,4 @@ def drop_db(session):
     session.query(Movie).delete()
     session.query(Tag).delete()
     session.commit()
-    logging.warn("DB droped!")
+    logging.warning("DB droped!")
