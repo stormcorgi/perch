@@ -5,6 +5,7 @@ from perch import create_app
 from perch.db.connection import init_db
 
 # from perch import config
+import perch.config
 
 
 @pytest.fixture(name="app")
