@@ -3,7 +3,8 @@ import pytest
 
 from perch import create_app
 from perch.db.connection import init_db
-from perch import config
+
+# from perch import config
 
 
 @pytest.fixture(name="app")
