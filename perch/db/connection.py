@@ -1,7 +1,7 @@
 """manipulate perch.db with sqlalchemy, parse metadata with eagle_metaparser.py"""
 import logging
-from sqlalchemy import create_engine, Column, String, Integer
-from sqlalchemy import distinct
+
+from sqlalchemy import Column, Integer, String, create_engine, distinct
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -10,14 +10,12 @@ Base = declarative_base()
 
 def generate_engine(file_path):
     """require file_path(/some/path/dbname.sqlite)"""
-    logging.debug(
-        "engine generate -> sqlite:///%s?check_same_thread=False", file_path)
-    return create_engine(
-        f"sqlite:///{file_path}?check_same_thread=False")
+    logging.debug("engine generate -> sqlite:///%s?check_same_thread=False", file_path)
+    return create_engine(f"sqlite:///{file_path}?check_same_thread=False")
 
 
 def generate_session(file_path):
-    "db_session""return Session"""
+    "db_session" "return Session" ""
     return sessionmaker(generate_engine(file_path))
 
 
@@ -31,7 +29,8 @@ def init_db(file_path):
 
 class Actress(Base):
     """table Actress : id, actressid, name"""
-    __tablename__ = 'actress'
+
+    __tablename__ = "actress"
     id = Column(Integer, primary_key=True, unique=True)
     actressid = Column(String)
     name = Column(String)
@@ -68,7 +67,8 @@ class Actress(Base):
 
 class Movie(Base):
     """table Movie : id, filename, fileid, actressid"""
-    __tablename__ = 'movie'
+
+    __tablename__ = "movie"
     id = Column(Integer, primary_key=True, unique=True)
     filename = Column(String)
     fileid = Column(String)
@@ -91,18 +91,17 @@ class Movie(Base):
     def get_by_tag(cls, search_tag, session):
         """Query Tag table by tag and return Movie object lists"""
         movies = []
-        tag_records = session.query(Tag).filter(
-            Tag.tag == search_tag).all()
+        tag_records = session.query(Tag).filter(Tag.tag == search_tag).all()
         for tag_record in tag_records:
-            movies.append(session.query(cls).filter(
-                cls.fileid == tag_record.fileid).first())
+            movies.append(
+                session.query(cls).filter(cls.fileid == tag_record.fileid).first()
+            )
         return movies
 
     @classmethod
     def get_by_actress(cls, actressid, session):
         """Query DB, return all Movie that actress appear"""
-        return session.query(cls).filter(
-            cls.actressid == actressid).all()
+        return session.query(cls).filter(cls.actressid == actressid).all()
 
     @classmethod
     def get_first_by_actress(cls, actressid, session):
@@ -122,7 +121,8 @@ class Movie(Base):
 
 class Tag(Base):
     """table Tag : tagid, fileid, tag"""
-    __tablename__ = 'tag'
+
+    __tablename__ = "tag"
     tagid = Column(Integer, primary_key=True, unique=True)
     fileid = Column(String)
     tag = Column(String)

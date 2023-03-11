@@ -1,5 +1,6 @@
 """generate fixtures"""
 import pytest
+
 from perch import create_app
 from perch.db.connection import init_db
 from perch import config
@@ -15,12 +16,12 @@ def fixture_app():
     with app.app_context():
         init_db(app.config["DATABASE"])
 
-    app.post('/admin', data=dict(task='update_db'), follow_redirects=True)
+    app.post("/admin", data=dict(task="update_db"), follow_redirects=True)
 
     yield app
 
 
-@ pytest.fixture
+@pytest.fixture
 def client(app):
     """Create and return app.test_client()"""
     return app.test_client()

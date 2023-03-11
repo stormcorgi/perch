@@ -1,20 +1,23 @@
 """import pytest, sqlalchemy, app.perchdb, tests.conftest for CONST"""
 import pytest
 from sqlalchemy.orm import sessionmaker
-from perch.db.connection import Base, Actress, Movie, Tag, generate_engine
-from perch.db.update import update_actress, update_newfiles, update_tags, drop_db
+
+from perch.db.connection import Actress, Base, Movie, Tag, generate_engine
+from perch.db.update import (drop_db, update_actress, update_newfiles,
+                             update_tags)
 
 
 @pytest.fixture(name="db_session")
 def fixture_db(app):
     """generate test DB(when test finished,DB file will be erased)"""
     with app.app_context():
-        test_engine = generate_engine(app.config['DATABASE'])
+        test_engine = generate_engine(app.config["DATABASE"])
         test_session = sessionmaker(test_engine)
         # create DB tables inherited Base
         Base.metadata.create_all(test_engine)
         # return Session(), and wait test case finish
         yield test_session()
+
 
 # general
 
@@ -89,6 +92,7 @@ def test_actress_get_by_movie(db_session):
     for movie in movies:
         assert isinstance(movie, Actress)
 
+
 # movie
 
 
@@ -99,7 +103,7 @@ def test_movie_all(db_session):
 
 
 def test_get_by_tag(db_session):
-    """update_files, then query all Movie by Tag, return matched Movies """
+    """update_files, then query all Movie by Tag, return matched Movies"""
     update_actress(db_session)
     update_newfiles(db_session)
     update_tags(db_session)
@@ -108,7 +112,7 @@ def test_get_by_tag(db_session):
 
 
 def test_get_by_actress(db_session):
-    """update_files, then query all Movie by Actress, return matched Movies """
+    """update_files, then query all Movie by Actress, return matched Movies"""
     update_newfiles(db_session)
     assert len(Movie.get_by_actress("L03BHPEH9SNKO", db_session)) == 5
     assert len(Movie.get_by_actress("non-exist-tag", db_session)) == 0
@@ -136,6 +140,7 @@ def test_count_by_actress(db_session):
 
 # tag
 
+
 def test_tag_all(db_session):
     """update_files, then query all Tag, it must return some records"""
     update_newfiles(db_session)
@@ -144,7 +149,7 @@ def test_tag_all(db_session):
 
 
 def test_get_by_movie(db_session):
-    """update_files, then query all Tag by Movie, return matched Tags """
+    """update_files, then query all Tag by Movie, return matched Tags"""
     update_newfiles(db_session)
     update_tags(db_session)
     assert len(Tag.get_by_movie("L03BG2NLRKV5A", db_session)) == 2
