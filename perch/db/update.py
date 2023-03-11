@@ -2,7 +2,7 @@
 import logging
 import threading
 
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 from perch.db.connection import Actress, Movie, Tag
 from perch.parser.eagle import parse_actress_name_id, parse_all_file_metadatas
