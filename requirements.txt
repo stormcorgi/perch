@@ -17,7 +17,7 @@ isort==5.10.1
 itsdangerous==2.1.2
 Jinja2==3.1.2
 joblib==1.1.0
-lazy-object-proxy==1.7.1
+lazy-object-proxy==1.9.0
 lightgbm==3.3.2
 MarkupSafe==2.1.1
 mccabe==0.7.0
