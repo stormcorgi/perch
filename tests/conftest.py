@@ -4,7 +4,7 @@ import pytest
 # from perch import config
 
 # import perch.config
-from perch import create_app
+from perch.flask_app import create_app
 from perch.db.connection import init_db
 
 
