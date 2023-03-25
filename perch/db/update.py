@@ -2,9 +2,9 @@
 import logging
 import threading
 
-from sqlalchemy.orm import declarative_base
 from db.connection import Actress, Movie, Tag
 from db.eagle import parse_actress_name_id, parse_all_file_metadatas
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 

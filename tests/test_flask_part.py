@@ -1,9 +1,9 @@
-"""start flask(FLASKAPP=perch)"""
+"""start flask(FLASKAPP=perch)."""
 import time
 
 
 def test_rend_main(client):
-    """load / , check page returned. check api same time"""
+    """load / , check page returned. check api same time."""
     # FIXME init db before flask_part tests...
     client.post("/admin", data=dict(task="update_db"), follow_redirects=True)
     time.sleep(2)

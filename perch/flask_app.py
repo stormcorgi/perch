@@ -1,16 +1,20 @@
 """ use flask and perchdb.py """
+import datetime
+import logging
 import os
 import random
-import logging
-import datetime
-from flask import render_template, Flask, request, redirect, url_for
+
 import db.connection as dbcon
 import db.update as dbup
+from flask import Flask, redirect, render_template, request, url_for
 
 start_dt = datetime.datetime.now()
-start_str = start_dt.strftime('%Y%m%d-%H')
-logging.basicConfig(level=logging.INFO, filename=f"./log/perch-{start_str}.log",
-                    format='%(asctime)s %(message)s')
+start_str = start_dt.strftime("%Y%m%d-%H")
+logging.basicConfig(
+    level=logging.INFO,
+    filename=f"./log/perch-{start_str}.log",
+    format="%(asctime)s %(message)s",
+)
 
 
 """Create and configure an instance of flask app"""
@@ -19,16 +23,15 @@ app = Flask(__name__, instance_relative_config=True)
 config_type = {
     "development": "config.Development",
     "testing": "config.Testing",
-    "production": "config.Production"
+    "production": "config.Production",
 }
-logging.info("ENV : %s", os.getenv('FLASK_APP_ENV', 'production'))
+logging.info("ENV : %s", os.getenv("FLASK_APP_ENV", "production"))
 
-app.config.from_object(config_type.get(
-    os.getenv('FLASK_APP_ENV', 'production')))
+app.config.from_object(config_type.get(os.getenv("FLASK_APP_ENV", "production")))
 
 logging.info("app generate start...")
-logging.debug("DB => %s", app.config['DATABASE'])
-logging.debug("LIB_PATH => %s", app.config['LIB_PATH'])
+logging.debug("DB => %s", app.config["DATABASE"])
+logging.debug("LIB_PATH => %s", app.config["LIB_PATH"])
 
 try:
     os.makedirs(app.instance_path)
@@ -40,6 +43,7 @@ dbcon.init_db(db_full_path)
 session_func = dbcon.generate_session(db_full_path)
 current_session = session_func()
 
+
 @app.route("/")
 def rend_main():
     """render main page"""
@@ -47,28 +51,35 @@ def rend_main():
         "main.html",
         actresses=dbcon.Actress.all(current_session),
         tags=dbcon.Tag.all(current_session),
-        lib_path=app.config["LIB_PATH"]
+        lib_path=app.config["LIB_PATH"],
     )
+
 
 @app.route("/actress/<name>")
 def rend_aectress(name):
     """render actress page"""
     actress = dbcon.Actress.get_by_name(name, current_session)
     movies = dbcon.Movie.get_by_actress(actress.actressid, current_session)
-    return render_template("actress.html", actress=actress, movies=movies, lib_path=app.config["LIB_PATH"])
+    return render_template(
+        "actress.html", actress=actress, movies=movies, lib_path=app.config["LIB_PATH"]
+    )
+
 
 @app.route("/tag/<tag>")
 def rend_tag(tag):
     """render tag page"""
     movies = dbcon.Movie.get_by_tag(tag, current_session)
-    return render_template("tags.html", tag=tag, movies=movies, lib_path=app.config["LIB_PATH"])
+    return render_template(
+        "tags.html", tag=tag, movies=movies, lib_path=app.config["LIB_PATH"]
+    )
+
 
 @app.route("/player")
 def rend_player():
     """render player page"""
-    fileid = request.args.get('id', default=None, type=str)
+    fileid = request.args.get("id", default=None, type=str)
     filepath = fileid + ".info"
-    filename = request.args.get('name', default=None, type=str)
+    filename = request.args.get("name", default=None, type=str)
     tags = dbcon.Tag.get_by_movie(fileid, current_session)
     actresses = dbcon.Actress.get_by_movie(fileid, current_session)
     return render_template(
@@ -77,8 +88,9 @@ def rend_player():
         filename=filename,
         actresses=actresses,
         tags=tags,
-        lib_path=app.config["LIB_PATH"]
+        lib_path=app.config["LIB_PATH"],
     )
+
 
 @app.route("/admin", methods=["GET", "POST"])
 def render_admin():
@@ -96,6 +108,7 @@ def render_admin():
 
     return f"""<html><body>unknown task : {request.form["task"]}</body></html>"""
 
+
 @app.route("/random")
 def jump_random():
     total_movie_count = dbcon.Movie.count_all(current_session)
@@ -104,9 +117,11 @@ def jump_random():
     if random_movie is None:
         return "<html><body>can't jump random: random item is null.</body></html>"
 
-    logging.info(
-        "player?id=%s&name=%s", random_movie.fileid, random_movie.filename)
+    logging.info("player?id=%s&name=%s", random_movie.fileid, random_movie.filename)
     # <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
-    return redirect(url_for("rend_player", id=random_movie.fileid, name=random_movie.filename))
+    return redirect(
+        url_for("rend_player", id=random_movie.fileid, name=random_movie.filename)
+    )
+
 
 logging.info("app generate done!")
