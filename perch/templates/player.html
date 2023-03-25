@@ -5,13 +5,13 @@
 
 <body>
     {% include "./parts/header.html" %}
-    <a href="vlc://smb://192.168.10.110/share1/videos.library/images/{{filepath}}/{{filename}}.mp4">
+    <a href="vlc://smb://100.64.1.170/share1/videos.library/images/{{filepath}}/{{filename}}.mp4">
         <h3 class="text-center">{{filename}}</h3>
     </a>
     <div class="container">
         <video controls width="100%" preload="metadata"
-            poster="{{lib_path}}/images/{{filepath}}/{{filename}}_thumbnail.png"
-            src="{{lib_path}}/images/{{filepath}}/{{filename}}.mp4"></video>
+            poster="images/{{filepath}}/{{filename}}_thumbnail.png"
+            src="images/{{filepath}}/{{filename}}.mp4"></video>
     </div>
     </div>
     <h6 class="text-center text-muted">女優:

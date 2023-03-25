@@ -1,59 +1,59 @@
 <html>
-
-<head>
+  <head>
     {% include "./parts/bootstrap-head.html" %}
     <title>{{actress.name}} - perch</title>
-</head>
+  </head>
 
-<body>
+  <body>
     {% include "./parts/header.html" %}
 
     <h3 class="text-center">{{actress.name}} ({{actress.count}})</h3>
     <div class="container">
-        <div class="row row-cols-2">
-            {% for movie in movies %}
-            {% if loop.index % 2 == 0 %}
-            <div class="col" style="width: 25%">
-                <div class="thumbnail">
-                    <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
-                        <img class="img-thumbnail img-responsive"
-                            src="../{{lib_path}}/images/{{movie.fileid}}.info/{{movie.filename}}_thumbnail.png">
-                    </a>
-                </div>
-                <p class="text-center text-truncate">
-                    <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
-                        {{movie.filename}}
-                    </a>
-                </p>
-            </div>
+      <div class="row row-cols-2">
+        {% for movie in movies %} {% if loop.index % 2 == 0 %}
+        <div class="col" style="width: 25%">
+          <div class="thumbnail">
+            <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
+              <img
+                class="img-thumbnail img-responsive"
+                src="../images/{{movie.fileid}}.info/{{movie.filename}}_thumbnail.png"
+              />
+            </a>
+          </div>
+          <p class="text-center text-truncate">
+            <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
+              {{movie.filename}}
+            </a>
+          </p>
         </div>
-        <div class="row">
-            {% else %}
-            <div class="col" style="width: 25%">
-                <div class="thumbnail">
-                    <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
-                        <img class="img-thumbnail img-responsive"
-                            src="../{{lib_path}}/images/{{movie.fileid}}.info/{{movie.filename}}_thumbnail.png">
-                    </a>
-                </div>
-                <p class="text-center text-truncate">
-                    <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
-                        {{movie.filename}}
-                    </a>
-                </p>
-            </div>
-            {% endif %}
-            {% endfor %}
+      </div>
+      <div class="row">
+        {% else %}
+        <div class="col" style="width: 25%">
+          <div class="thumbnail">
+            <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
+              <img
+                class="img-thumbnail img-responsive"
+                src="../images/{{movie.fileid}}.info/{{movie.filename}}_thumbnail.png"
+              />
+            </a>
+          </div>
+          <p class="text-center text-truncate">
+            <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
+              {{movie.filename}}
+            </a>
+          </p>
         </div>
+        {% endif %} {% endfor %}
+      </div>
     </div>
 
     <footer id="footer" class="fixed-bottom">
-        <div class="container">
-            <p class="text-muted text-right">ID:{{actress.actressid}}</p>
-        </div>
+      <div class="container">
+        <p class="text-muted text-right">ID:{{actress.actressid}}</p>
+      </div>
     </footer>
 
     {% include "./parts/bootstrap-js.html" %}
-</body>
-
+  </body>
 </html>
