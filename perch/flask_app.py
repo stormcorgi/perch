@@ -123,3 +123,6 @@ def create_app():
 
     logging.info("app generate done!")
     return app
+
+
+app = create_app()
