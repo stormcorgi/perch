@@ -8,7 +8,7 @@ tests/sample.library/images/*/*.png
 tests/sample.library/images/*/*.jpg
 tests/*.sqlite
 tests/results
-log/*.log
+**/*.log
 perch/config.py
 __pycache__
 .venv

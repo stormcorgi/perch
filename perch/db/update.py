@@ -2,8 +2,8 @@
 import logging
 import threading
 from sqlalchemy.ext.declarative import declarative_base
-from perch.parser.eagle import parse_actress_name_id, parse_all_file_metadatas
-from perch.db.connection import Actress, Tag, Movie
+from .eagle import parse_actress_name_id, parse_all_file_metadatas
+from db.connection import Actress, Tag, Movie
 
 Base = declarative_base()
 
