@@ -42,8 +42,12 @@ class UpdateThread(threading.Thread):
 def update_actress(session):
     """check metadata.json and update DB actress table"""
     on_db_actresses_dict = {a.name: a.actressid for a in session.query(Actress).all()}
-
     json_name_id_dict = parse_actress_name_id()
+
+    if not json_name_id_dict:
+        logging.info("  [INFO][DB][actress] no actress in metadata.json")
+        return
+
     target_actress = json_name_id_dict.keys() - on_db_actresses_dict.keys()
 
     if target_actress != []:

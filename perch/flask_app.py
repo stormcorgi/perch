@@ -4,9 +4,10 @@ import logging
 import os
 import random
 
+from flask import Flask, redirect, render_template, request, url_for
+
 import perch.db.connection as dbcon
 import perch.db.update as dbup
-from flask import Flask, redirect, render_template, request, url_for
 
 start_dt = datetime.datetime.now()
 start_str = start_dt.strftime("%Y%m%d")
@@ -45,7 +46,7 @@ def create_app():
     current_session = session_func()
 
     @app.route("/")
-    def rend_main():
+    def render_main():
         """render main page"""
         return render_template(
             "main.html",
@@ -116,11 +117,11 @@ def create_app():
         if request.form["task"] == "update_db":
             thread = dbup.UpdateThread(app, current_session)
             thread.start()
-            return """<html><body>request queued.</body></html>"""
+            return redirect(url_for("render_admin"))
 
         if request.form["task"] == "drop_db":
             dbup.drop_db(current_session)
-            return f"""<html><body>{request.form["task"]} done!</body></html>"""
+            return redirect(url_for("render_main"))
 
         return f"""<html><body>unknown task : {request.form["task"]}</body></html>"""
 
