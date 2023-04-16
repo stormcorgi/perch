@@ -11,28 +11,27 @@
     <h6 class="text-muted text-center">- web assistant for Eagle movie library -</h6>
     <div class="container">
         <h5 class="text-muted">actress</h5>
-        <div class="row row-cols-4">
+        <div class="row row-cols-2">
             {% for actress in actresses %}
-            {% if loop.index % 4 == 0 %}
+            {% if loop.index % 2 == 0 %}
             <div class="col card text-white">
+                <a href="actress/{{actress.name}}">
                 <img class="card-img-top img-thumbnail img-responsive" src="/images/{{actress.facepath}}">
                 <div class="card-body">
-                    <a href="actress/{{actress.name}}" class="card-text">
-                        <h5>{{actress.name}}</h>
-                            <p class="small text-muted text-nowrap">({{actress.count}})</p>
-                    </a>
+                    <p class="card-text small text-muted text-nowrap">{{actress.name}}({{actress.count}})</p>
                 </div>
+                </a>
             </div>
         </div>
         <div class="row">
             {% else %}
             <div class="col card text-white">
+                <a href="actress/{{actress.name}}">
                 <img class="card-img-top img-thumbnail img-responsive" src="/images/{{actress.facepath}}">
                 <div class="card-body">
-                    <a href="actress/{{actress.name}}" class="card-text">
-                    {{actress.name}}<p class="small text-muted text-nowrap">({{actress.count}})</p>
-                    </a>
+                    <p class="card-text small text-muted text-nowrap">{{actress.name}}({{actress.count}})</p>
                 </div>
+                </a>
             </div>
             {% endif %}
             {% endfor %}
