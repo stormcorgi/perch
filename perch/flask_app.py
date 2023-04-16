@@ -4,9 +4,10 @@ import logging
 import os
 import random
 
+from flask import Flask, redirect, render_template, request, url_for
+
 import perch.db.connection as dbcon
 import perch.db.update as dbup
-from flask import Flask, redirect, render_template, request, url_for
 
 start_dt = datetime.datetime.now()
 start_str = start_dt.strftime("%Y%m%d")
@@ -45,7 +46,7 @@ def create_app():
     current_session = session_func()
 
     @app.route("/")
-    def rend_main():
+    def render_main():
         """render main page"""
         return render_template(
             "main.html",
@@ -89,14 +90,24 @@ def create_app():
         filename = request.args.get("name", default=None, type=str)
         tags = dbcon.Tag.get_by_movie(fileid, current_session)
         actresses = dbcon.Actress.get_by_movie(fileid, current_session)
+        if movie.star is None:
+            movie.star = 0
         return render_template(
             "player.html",
+            fileid=fileid,
             filepath=filepath,
             filename=filename,
             actresses=actresses,
             tags=tags,
             lib_path=app.config["LIB_PATH"],
+            star=movie.star,
         )
+
+    @app.route("/movie/<fileid>", methods=["POST"])
+    def render_movie(fileid):
+        if request.form["rating"]:
+            dbup.update_star(current_session, fileid, int(request.form["rating"]))
+            return redirect(url_for("rend_player", id=fileid))
 
     @app.route("/admin", methods=["GET", "POST"])
     def render_admin():
@@ -106,11 +117,11 @@ def create_app():
         if request.form["task"] == "update_db":
             thread = dbup.UpdateThread(app, current_session)
             thread.start()
-            return """<html><body>request queued.</body></html>"""
+            return redirect(url_for("render_admin"))
 
         if request.form["task"] == "drop_db":
             dbup.drop_db(current_session)
-            return f"""<html><body>{request.form["task"]} done!</body></html>"""
+            return redirect(url_for("render_main"))
 
         return f"""<html><body>unknown task : {request.form["task"]}</body></html>"""
 
@@ -132,4 +143,4 @@ def create_app():
     return app
 
 
-app = create_app()
+application = create_app()
