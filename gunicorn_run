@@ -1,1 +1,3 @@
-gunicorn --config gunicorn_conf.py
+#!/bin/ash
+cd /root/perch
+gunicorn --log-level info --config gunicorn_conf.py
