@@ -149,15 +149,13 @@ class Tag(Base):
     @classmethod
     def all(cls, session):
         """Query Tag table and make unique, then return all unique Tag object"""
-        tag_obj_list = []
-        tag_str_list = []
-        tags_str = session.query(distinct(cls.tag)).all()
-        for tag_str in tags_str:
-            tag_str_list.append(tag_str[0])
-        tag_str_list = sorted(tag_str_list)
-        for tag_str in tag_str_list:
-            tag_obj_list.append(cls(0, tag_str))
-        return tag_obj_list
+        # generate distinct tag set
+        tags_set = {i[0] for i in session.query(cls.tag).all()}
+        # generate Tag object list
+        tags_list = []
+        for tag in tags_set:
+            tags_list.append(cls(tag=tag))
+        return tags_list
 
     @classmethod
     def get_by_movie(cls, fileid, session):
