@@ -11,23 +11,29 @@
     <h6 class="text-muted text-center">- web assistant for Eagle movie library -</h6>
     <div class="container">
         <h5 class="text-muted">actress</h5>
-        <div class="row">
+        <div class="row row-cols-4">
             {% for actress in actresses %}
-            {% if loop.index % 3 == 0 %}
-            <div class="col">
-                <img class="img-thumbnail img-responsive" src="/images/{{actress.facepath}}">
-                <a href="actress/{{actress.name}}" class="text-nowrap">{{actress.name}}<p
-                        class="small text-muted text-nowrap">({{actress.count}})</p>
-                </a>
+            {% if loop.index % 4 == 0 %}
+            <div class="col card text-white">
+                <img class="card-img-top img-thumbnail img-responsive" src="/images/{{actress.facepath}}">
+                <div class="card-body">
+                    <a href="actress/{{actress.name}}" class="card-text">
+                        <h3>{{actress.name}}</h>
+                            <p class="small text-muted text-nowrap">({{actress.count}})</p>
+                    </a>
+                </div>
             </div>
         </div>
         <div class="row">
             {% else %}
-            <div class="col">
-                <img class="img-thumbnail img-responsive" src="/images/{{actress.facepath}}">
-                <a href="actress/{{actress.name}}" class="text-nowrap">{{actress.name}}<p
-                        class="small text-muted text-nowrap">({{actress.count}})</p>
-                </a>
+            <div class="col card text-white">
+                <img class="card-img-top img-thumbnail img-responsive" src="/images/{{actress.facepath}}">
+                <div class="card-body">
+                    <a href="actress/{{actress.name}}" class="card-text">
+                        <h3>{{actress.name}}</h>
+                            <p class="small text-muted text-nowrap">({{actress.count}})</p>
+                    </a>
+                </div>
             </div>
             {% endif %}
             {% endfor %}
