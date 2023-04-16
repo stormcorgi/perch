@@ -50,6 +50,20 @@ def test_drop_db(db_session):
     assert len(db_session.query(Movie).all()) == 0
 
 
+def test_change_movie_star(db_session):
+    """test changing star"""
+    update_actress(db_session)
+    update_newfiles(db_session)
+    target = Movie.get_by_fileid("L03BG2NLB9L5W", db_session)
+    target.star = 1
+    db_session.commit()
+    assert target.star == 1
+
+    target.star = 2
+    db_session.commit()
+    assert target.star == 2
+
+
 # actress
 
 

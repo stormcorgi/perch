@@ -4,6 +4,7 @@ from perch.db.eagle import (
     parse_all_file_metadatas,
     parse_all_tags,
     parse_file_metadata,
+    update_file_star,
 )
 
 
@@ -58,3 +59,17 @@ def test_parse_all_file_metadatas(app):
                 assert metadata[fileid]["filename"] == "1vv6rPwy-kk"
                 assert metadata[fileid]["actressid"][0] == "L03BHPEH9SNKO"
                 assert metadata[fileid]["tags"][0] == "night"
+
+
+def test_update_file_star(app):
+    with app.app_context():
+        fileid = "L03BG2NLNXQOK"
+        lib_path = app.config["LIB_PATH"]
+
+        update_file_star(fileid, 1)
+        meta = parse_file_metadata(f"{lib_path}/images/{fileid}.info")
+        assert meta[fileid]["star"] == 1
+
+        update_file_star(fileid, 2)
+        meta = parse_file_metadata(f"{lib_path}/images/{fileid}.info")
+        assert meta[fileid]["star"] == 2
