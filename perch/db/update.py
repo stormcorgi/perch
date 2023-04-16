@@ -99,7 +99,7 @@ def update_newfiles(session, meta=None):
 
     # FIXME アイテムを多重登録している
     targets = [
-        Movie(fileid=k, filename=v["filename"], actressid=i)
+        Movie(fileid=k, filename=v["filename"], actressid=i, star=v["star"])
         for k, v in targets_dicts.items()
         for i in v["actressid"]
     ]

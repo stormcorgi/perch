@@ -57,11 +57,17 @@ def parse_file_metadata(dirpath):
     with open(path, "r", encoding="utf-8") as file:
         logging.debug("  [DEBUG][parse] File found on %s", path)
         json_meta = json.load(file)
+        star = 0
+        try:
+            star = json_meta["star"]
+        except KeyError:
+            pass
         metadata = {
             json_meta["id"]: {
                 "filename": json_meta["name"],
                 "actressid": json_meta["folders"],
                 "tags": json_meta["tags"],
+                "star": star,
             }
         }
         logging.debug("  [DEBUG][parse_file_metadata] parsed metadata : %s", metadata)
