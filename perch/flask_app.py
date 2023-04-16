@@ -108,7 +108,11 @@ def create_app() -> flask.app.Flask:
     def render_movie(fileid):
         if request.form["rating"]:
             dbup.update_star(current_session, fileid, int(request.form["rating"]))
-            return redirect(url_for("rend_player", id=fileid))
+            # get filename
+            movie = dbcon.Movie.get_by_fileid(fileid, current_session)
+            if not movie:
+                return "<html><body>wrong request. movie not exists</body></html>"
+            return redirect(url_for("rend_player", id=fileid, name=movie.filename))
 
     @app.route("/admin", methods=["GET", "POST"])
     def render_admin():
