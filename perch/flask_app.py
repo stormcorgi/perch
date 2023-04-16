@@ -89,6 +89,7 @@ def create_app():
             actresses=actresses,
             tags=tags,
             lib_path=app.config["LIB_PATH"],
+            star=movie.star,
         )
 
     @app.route("/admin", methods=["GET", "POST"])

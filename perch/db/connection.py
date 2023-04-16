@@ -65,16 +65,17 @@ class Actress(Base):
 
 
 class Movie(Base):
-    """table Movie : id, filename, fileid, actressid"""
+    """table Movie : id, filename, fileid, actressid, star"""
 
     __tablename__ = "movie"
     id = Column(Integer, primary_key=True, unique=True)
     filename = Column(String)
     fileid = Column(String)
     actressid = Column(String)
+    star = Column(Integer)
 
     def __repr__(self):
-        return f"Movie<{self.id},{self.filename},{self.fileid},{self.actressid}>"
+        return f"Movie<{self.id},{self.filename},{self.fileid},{self.actressid},{self.star}>"
 
     @classmethod
     def all(cls, session):
