@@ -40,19 +40,3 @@
 .rating:hover > input:checked ~ label:before {
   opacity: 0.4;
 }
-
-.buttons {
-  top: 36px;
-  position: relative;
-}
-
-.rating-submit {
-  border-radius: 15px;
-  color: #fff;
-  height: 49px;
-  width: 149px;
-}
-
-.rating-submit:hover {
-  color: #fff;
-}
