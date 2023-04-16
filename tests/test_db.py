@@ -159,7 +159,9 @@ def test_tag_all(db_session):
     """update_files, then query all Tag, it must return some records"""
     update_newfiles(db_session)
     update_tags(db_session)
-    assert len(Tag.all(db_session)) >= 5
+    result = Tag.all(db_session)
+    assert result is not None
+    assert len(result) >= 5
 
 
 def test_get_by_movie(db_session):

@@ -3,11 +3,13 @@ import datetime
 import json
 import logging
 import os
+from typing import List, Dict, Optional
+
 
 from flask import current_app
 
 
-def parse_actress_name_id():
+def parse_actress_name_id() -> Optional[Dict[str, str]]:
     """returns {actressname: eagleid}, or return None when failed parse"""
     with current_app.app_context():
         meta_path = current_app.config["LIB_PATH"] + "/metadata.json"
@@ -29,7 +31,7 @@ def parse_actress_name_id():
         return actress_name_id
 
 
-def parse_all_tags():
+def parse_all_tags() -> Optional[List[str]]:
     """returns ["tag name itself"], or return None when failed parse"""
     meta_path = current_app.config["LIB_PATH"] + "/metadata.json"
     # file exists?
@@ -95,7 +97,7 @@ def parse_all_file_metadatas():
 
 
 # update file star data. if star is not exist in metadata.json file, add new line.
-def update_file_star(file_id, star):
+def update_file_star(file_id, star) -> bool:
     """update file star data. if star is not exist in metadata.json file, add new line.
     return True when success, False when failed"""
     # get now with unix epoch time

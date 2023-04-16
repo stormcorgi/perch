@@ -8,7 +8,6 @@ from perch.flask_app import create_app
 # from perch import config
 
 
-
 @pytest.fixture(name="app")
 def fixture_app():
     """Create and configure a new app instance for each test."""

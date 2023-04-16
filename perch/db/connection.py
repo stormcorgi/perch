@@ -1,24 +1,26 @@
 """manipulate perch.db with sqlalchemy, parse metadata with eagle_metaparser.py"""
 import logging
 
-from sqlalchemy import Column, Integer, String, create_engine, distinct
+import sqlalchemy.orm.session
+from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 Base = declarative_base()
 
 
-def generate_engine(file_path):
+def generate_engine(file_path: str) -> Engine:
     """require file_path(/some/path/dbname.sqlite)"""
     logging.debug("engine generate -> sqlite:///%s?check_same_thread=False", file_path)
     return create_engine(f"sqlite:///{file_path}?check_same_thread=False")
 
 
-def generate_session(file_path):
-    "db_session" "return Session" ""
+def generate_session(file_path: str) -> sqlalchemy.orm.session.sessionmaker:
+    """ "db_session" "return Session" """
     return sessionmaker(generate_engine(file_path))
 
 
-def init_db(file_path):
+def init_db(file_path: str) -> None:
     """init db with app_context"""
     logging.debug("start init_db on %s", file_path)
     engine = generate_engine(file_path)

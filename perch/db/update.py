@@ -5,8 +5,11 @@ import threading
 from sqlalchemy.orm import declarative_base
 
 from perch.db.connection import Actress, Movie, Tag
-from perch.db.eagle import (parse_actress_name_id, parse_all_file_metadatas,
-                            update_file_star)
+from perch.db.eagle import (
+    parse_actress_name_id,
+    parse_all_file_metadatas,
+    update_file_star,
+)
 
 Base = declarative_base()
 
@@ -36,14 +39,14 @@ class UpdateThread(threading.Thread):
                 logging.info("DB update done!")
 
 
-def update_actress(session):
+def update_actress(session) -> None:
     """check metadata.json and update DB actress table"""
     on_db_actresses_dict = {a.name: a.actressid for a in session.query(Actress).all()}
     json_name_id_dict = parse_actress_name_id()
 
     if not json_name_id_dict:
         logging.info("  [INFO][DB][actress] no actress in metadata.json")
-        return
+        return None
 
     target_actress = json_name_id_dict.keys() - on_db_actresses_dict.keys()
 
@@ -58,7 +61,7 @@ def update_actress(session):
         logging.debug("  [DEBUG][DB][actress] %s", target)
 
 
-def update_tags(session, meta=None):
+def update_tags(session, meta=None) -> None:
     """used in update_files, update tag datas"""
     if meta is None:
         meta = parse_all_file_metadatas()
@@ -78,7 +81,7 @@ def update_tags(session, meta=None):
     session.commit()
 
 
-def update_filename(session, movs, item):
+def update_filename(session, movs, item) -> None:
     """file exist, update required?"""
     for mov in movs:
         if mov.filename != item["filename"]:
@@ -112,7 +115,7 @@ def update_newfiles(session, meta=None) -> None:
     return None
 
 
-def update_count(session):
+def update_count(session) -> None:
     """check all actress data and set count number"""
     actresses = Actress.all(session)
     targets = []
@@ -132,7 +135,7 @@ def update_count(session):
 
 
 # update star number
-def update_star(session, fileid: str, star: int):
+def update_star(session, fileid: str, star: int) -> None:
     """update star number"""
     # rate is 1 to 5
     # css matter, so actual rate is 6 - star number
@@ -144,7 +147,7 @@ def update_star(session, fileid: str, star: int):
     update_file_star(fileid, rate)
 
 
-def drop_db(session):
+def drop_db(session) -> None:
     """drop all DB tables"""
     session.query(Actress).delete()
     session.query(Movie).delete()

@@ -4,6 +4,7 @@ import logging
 import os
 import random
 
+import flask.app
 from flask import Flask, redirect, render_template, request, url_for
 
 import perch.db.connection as dbcon
@@ -18,7 +19,7 @@ logging.basicConfig(
 )
 
 
-def create_app():
+def create_app() -> flask.app.Flask:
     """Create and configure an instance of flask app"""
     app = Flask(__name__, instance_relative_config=True)
 
