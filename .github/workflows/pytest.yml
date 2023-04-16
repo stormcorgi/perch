@@ -34,5 +34,3 @@ jobs:
           file: ./coverage.xml
           name: codecov-umbrella
           fail_ci_if_error: true
-
-

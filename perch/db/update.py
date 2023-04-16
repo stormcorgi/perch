@@ -5,11 +5,8 @@ import threading
 from sqlalchemy.orm import declarative_base
 
 from perch.db.connection import Actress, Movie, Tag
-from perch.db.eagle import (
-    parse_actress_name_id,
-    parse_all_file_metadatas,
-    update_file_star,
-)
+from perch.db.eagle import (parse_actress_name_id, parse_all_file_metadatas,
+                            update_file_star)
 
 Base = declarative_base()
 
@@ -18,7 +15,7 @@ class UpdateThread(threading.Thread):
     """for execute update_db on background(another thread)"""
 
     def __init__(self, app, session):
-        super(UpdateThread, self).__init__()
+        super().__init__()
         self.stop_event = threading.Event()
         self.app = app
         self.session = session
@@ -65,8 +62,8 @@ def update_tags(session, meta=None):
     """used in update_files, update tag datas"""
     if meta is None:
         meta = parse_all_file_metadatas()
-    json_tag_set = set([t for d in meta for _, v in d.items() for t in v["tags"]])
-    on_db_tags_set = set([t.tag for t in session.query(Tag).all()])
+    json_tag_set = {t for d in meta for _, v in d.items() for t in v["tags"]}
+    on_db_tags_set = {t.tag for t in session.query(Tag).all()}
 
     target_tags = json_tag_set - on_db_tags_set
 
@@ -90,23 +87,21 @@ def update_filename(session, movs, item):
             session.commit()
 
 
-def update_newfiles(session, meta=None):
+def update_newfiles(session, meta=None) -> None:
     """check images/metadata.json and update DB movie,tag table"""
     if meta is None:
         meta = parse_all_file_metadatas()
 
-    json_fileids = set([fileid for d in meta for fileid, _ in d.items()])
-
+    json_fileids = {fileid for d in meta for fileid, _ in d.items()}
     on_db_movies_dict = {m.fileid: m.filename for m in session.query(Movie).all()}
 
     target_movies_set = json_fileids - on_db_movies_dict.keys()
 
     if target_movies_set == []:
-        return
+        return None
 
     targets_dicts = {k: v for d in meta for k, v in d.items() if k in target_movies_set}
 
-    # FIXME アイテムを多重登録している
     targets = [
         Movie(fileid=k, filename=v["filename"], actressid=i, star=v["star"])
         for k, v in targets_dicts.items()
@@ -114,6 +109,7 @@ def update_newfiles(session, meta=None):
     ]
     session.add_all(targets)
     session.commit()
+    return None
 
 
 def update_count(session):

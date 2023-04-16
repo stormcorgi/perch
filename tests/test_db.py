@@ -3,7 +3,8 @@ import pytest
 from sqlalchemy.orm import sessionmaker
 
 from perch.db.connection import Actress, Base, Movie, Tag, generate_engine
-from perch.db.update import drop_db, update_actress, update_newfiles, update_tags
+from perch.db.update import (drop_db, update_actress, update_newfiles,
+                             update_tags)
 
 
 @pytest.fixture(name="db_session")

@@ -1,11 +1,12 @@
 """generate fixtures"""
 import pytest
 
-# from perch import config
-
+from perch.db.connection import init_db
 # import perch.config
 from perch.flask_app import create_app
-from perch.db.connection import init_db
+
+# from perch import config
+
 
 
 @pytest.fixture(name="app")

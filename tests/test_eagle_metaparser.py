@@ -1,17 +1,14 @@
 """load eagle_metaparser, tests.conftest for static path"""
-from perch.db.eagle import (
-    parse_actress_name_id,
-    parse_all_file_metadatas,
-    parse_all_tags,
-    parse_file_metadata,
-    update_file_star,
-)
+from perch.db.eagle import (parse_actress_name_id, parse_all_file_metadatas,
+                            parse_all_tags, parse_file_metadata,
+                            update_file_star)
 
 
 def test_parse_actress_name_id(app):
     """parse master metadata.json, parse {actress name: actressid}"""
     with app.app_context():
         actresses = parse_actress_name_id()
+        assert actresses is not None
         assert actresses["human"] == "L03BJZ6UJU790"
         assert len(actresses) == 5
 
@@ -24,6 +21,7 @@ def test_parse_all_tags(app):
     """parse master metadata.json, parse tag[]"""
     with app.app_context():
         tags = parse_all_tags()
+        assert tags is not None
         assert tags[0] == "animal"
         assert len(tags) == 15
 
@@ -38,6 +36,7 @@ def test_parse_file_metadata(app):
         fileid = "L03BG2NLB8U1I"
         lib_path = app.config["LIB_PATH"]
         meta = parse_file_metadata(f"{lib_path}/images/{fileid}.info")
+        assert meta is not None
         assert meta[fileid]["filename"] == "kLpTMbSKGi4"
         assert meta[fileid]["actressid"][0] == "L03BHPEH9SNKO"
         assert meta[fileid]["tags"][0] == "cycle"
@@ -62,14 +61,17 @@ def test_parse_all_file_metadatas(app):
 
 
 def test_update_file_star(app):
+    """update file's star, test db.eagle.update_file_star()"""
     with app.app_context():
         fileid = "L03BG2NLNXQOK"
         lib_path = app.config["LIB_PATH"]
 
         update_file_star(fileid, 1)
         meta = parse_file_metadata(f"{lib_path}/images/{fileid}.info")
+        assert meta is not None
         assert meta[fileid]["star"] == 1
 
         update_file_star(fileid, 2)
         meta = parse_file_metadata(f"{lib_path}/images/{fileid}.info")
+        assert meta is not None
         assert meta[fileid]["star"] == 2
