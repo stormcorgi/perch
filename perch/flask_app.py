@@ -9,7 +9,7 @@ import perch.db.update as dbup
 from flask import Flask, redirect, render_template, request, url_for
 
 start_dt = datetime.datetime.now()
-start_str = start_dt.strftime("%Y%m%d-%H")
+start_str = start_dt.strftime("%Y%m%d")
 logging.basicConfig(
     level=logging.INFO,
     filename=f"./log/perch-{start_str}.log",
@@ -55,9 +55,11 @@ def create_app():
         )
 
     @app.route("/actress/<name>")
-    def rend_aectress(name):
+    def rend_actress(name):
         """render actress page"""
         actress = dbcon.Actress.get_by_name(name, current_session)
+        if not actress:
+            return redirect(url_for("rend_main"))
         movies = dbcon.Movie.get_by_actress(actress.actressid, current_session)
         return render_template(
             "actress.html",
@@ -78,7 +80,12 @@ def create_app():
     def rend_player():
         """render player page"""
         fileid = request.args.get("id", default=None, type=str)
-        filepath = fileid + ".info"
+        if not fileid:
+            return "<html><body>wrong request. fileid not exists</body></html>"
+        movie = dbcon.Movie.get_by_fileid(fileid, current_session)
+        if not movie:
+            return "<html><body>wrong request. movie not exists</body></html>"
+        filepath = movie.fileid + ".info"
         filename = request.args.get("name", default=None, type=str)
         tags = dbcon.Tag.get_by_movie(fileid, current_session)
         actresses = dbcon.Actress.get_by_movie(fileid, current_session)
