@@ -1,3 +1,0 @@
-export FLASK_APP="perch"
-export FLASK_APP_ENV="development"
-flask run --debugger --reload
