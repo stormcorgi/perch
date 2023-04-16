@@ -117,6 +117,16 @@ class Movie(Base):
         """Query Movie table and filter by id(not fileid) and return one Movie object"""
         return session.query(cls).filter(cls.id == search_id).first()
 
+    @classmethod
+    def get_by_fileid(cls, search_fileid, session):
+        """Query Movie table and filter by fileid and return one Movie object"""
+        return session.query(cls).filter(cls.fileid == search_fileid).first()
+
+    @classmethod
+    def get_by_star(cls, star: int, session):
+        """Query Movie table and filter by star and return all Movie object"""
+        return session.query(cls).filter(cls.star == star).all()
+
 
 class Tag(Base):
     """table Tag : tagid, fileid, tag"""
