@@ -2,9 +2,14 @@
 import logging
 import threading
 
-from perch.db.connection import Actress, Movie, Tag
-from perch.db.eagle import parse_actress_name_id, parse_all_file_metadatas
 from sqlalchemy.orm import declarative_base
+
+from perch.db.connection import Actress, Movie, Tag
+from perch.db.eagle import (
+    parse_actress_name_id,
+    parse_all_file_metadatas,
+    update_file_star,
+)
 
 Base = declarative_base()
 
@@ -124,6 +129,19 @@ def update_count(session):
         targets.append(actress)
     session.add_all(targets)
     session.commit()
+
+
+# update star number
+def update_star(session, fileid: str, star: int):
+    """update star number"""
+    # rate is 1 to 5
+    # css matter, so actual rate is 6 - star number
+    rate = 6 - star
+    movie = Movie.get_by_fileid(fileid, session)
+    movie.star = rate
+    session.commit()
+    # write back new star number into json file
+    update_file_star(fileid, rate)
 
 
 def drop_db(session):

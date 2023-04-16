@@ -91,3 +91,18 @@ def parse_all_file_metadatas():
             except FileNotFoundError:
                 pass
     return file_metadatas
+
+
+# update file star data. if star is not exist in metadata.json file, add new line.
+def update_file_star(file_id, star):
+    """update file star data. if star is not exist in metadata.json file, add new line.
+    return True when success, False when failed"""
+    path = f"{current_app.config['LIB_PATH']}/images/{file_id}.info/metadata.json"
+    with open(path, "r", encoding="utf-8") as file:
+        json_meta = json.load(file)
+        json_meta["star"] = star
+    if json_meta["star"] is None:
+        return False
+    with open(path, "w", encoding="utf-8") as file:
+        json.dump(json_meta, file)
+    return True

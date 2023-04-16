@@ -89,8 +89,11 @@ def create_app():
         filename = request.args.get("name", default=None, type=str)
         tags = dbcon.Tag.get_by_movie(fileid, current_session)
         actresses = dbcon.Actress.get_by_movie(fileid, current_session)
+        if movie.star is None:
+            movie.star = 0
         return render_template(
             "player.html",
+            fileid=fileid,
             filepath=filepath,
             filename=filename,
             actresses=actresses,
@@ -98,6 +101,12 @@ def create_app():
             lib_path=app.config["LIB_PATH"],
             star=movie.star,
         )
+
+    @app.route("/movie/<fileid>", methods=["POST"])
+    def render_movie(fileid):
+        if request.form["rating"]:
+            dbup.update_star(current_session, fileid, int(request.form["rating"]))
+            return redirect(url_for("rend_player", id=fileid))
 
     @app.route("/admin", methods=["GET", "POST"])
     def render_admin():
