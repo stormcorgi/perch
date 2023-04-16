@@ -9,7 +9,7 @@ import perch.db.update as dbup
 from flask import Flask, redirect, render_template, request, url_for
 
 start_dt = datetime.datetime.now()
-start_str = start_dt.strftime("%Y%m%d-%H")
+start_str = start_dt.strftime("%Y%m%d")
 logging.basicConfig(
     level=logging.INFO,
     filename=f"./log/perch-{start_str}.log",
