@@ -1,7 +1,9 @@
 import pytest
 
 from perch.domain.Actress import Actress
+from perch.domain.Movie import Movie
 from perch.repository.MemRepo import MemActressRepo
+from perch.repository.MemRepo import MemMovieRepo
 
 
 @pytest.fixture
@@ -37,9 +39,9 @@ def test_repository_list_without_parameters(actress_dicts):
 
 
 def test_repository_add(actress_dicts):
-    repo = MemActressRepo(actress_dicts[0:5])
+    repo = MemActressRepo([actress_dicts[0]])
     actresses = [Actress.from_dict(i) for i in actress_dicts]
-    repo.add(actress_dicts[5])
+    repo.add(actress_dicts[1])
     assert repo.list() == actresses
 
 

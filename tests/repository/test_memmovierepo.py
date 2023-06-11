@@ -195,5 +195,5 @@ def test_search_by_actress(movies_dicts, actress_dicts):
 def test_search_by_tag(movies_dicts):
     repo = MemMovieRepo(movies_dicts)
 
-    result = repo.search_by_tag("star")
+    result = repo.search_by_tag("Star")
     assert result[0].id == "L09HFIKE5N4O0"

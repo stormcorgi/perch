@@ -33,19 +33,6 @@ class MemMovieRepo(IMovieRepo):
     def __init__(self, data: list[dict]):
         self.data = data
 
-    def search_by_actress_id(self) -> list[Movie]:
-        return super().search_by_actress_id()
-
-    def search_by_actress_name(self) -> list[Movie]:
-        return super().search_by_actress_name()
-
-    def list(self) -> list[Movie]:
-        return [Movie.from_dict(i) for i in self.data]
-
-    def add(self, movie: dict) -> int:
-        self.data.append(movie)
-        return 0
-
     def search_by_id(self, id: str) -> Optional[Movie]:
         for m in self.list():
             if m.id == id:
@@ -57,3 +44,29 @@ class MemMovieRepo(IMovieRepo):
             if m.name == name:
                 return m
         return None
+
+    def search_by_actress(self, actress: Actress) -> list[Movie]:
+        return [m for m in self.list() for f in m.folders if f == actress.id]
+
+    def search_by_tag(self, tag: str) -> list[Movie]:
+        return [m for m in self.list() for t in m.tags if t == tag]
+
+    def list(self) -> list[Movie]:
+        return [Movie.from_dict(i) for i in self.data]
+
+    def add(self, movie: dict) -> int:
+        self.data.append(movie)
+        return 0
+
+    def delete(self, id: str) -> int:
+        self.data = [Movie.to_dict(m) for m in self.list() if m.id != id]
+        return 0
+
+    def update(self, movie: dict) -> int:
+        if movie not in self.list():
+            self.add(movie)
+            return 0
+        else:
+            self.delete(movie)
+            self.add(movie)
+            return 0

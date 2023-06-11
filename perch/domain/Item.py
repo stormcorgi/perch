@@ -21,6 +21,8 @@ class Item(metaclass=abc.ABCMeta):
     width: int
     lastModified: int
     palettes: list[dict]
+    star: int = 0
+    thumbnailAt: float = 0.0
 
     @classmethod
     def from_dict(cls, d):

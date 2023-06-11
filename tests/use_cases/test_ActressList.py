@@ -6,7 +6,7 @@ from perch.use_cases.ActressList import actress_list_use_case
 
 
 @pytest.fixture
-def domain_acresses():
+def domain_actresses():
     actress_1 = Actress(
         id="ASDFVZSC",
         name="Norah Jones",
@@ -64,10 +64,10 @@ def domain_acresses():
     return [actress_1, actress_2, actress_3, actress_4, actress_5]
 
 
-def test_actress_list_without_parameters(domain_acresses):
+def test_actress_list_without_parameters(domain_actresses):
     repo = mock.Mock()
-    repo.list.return_value = domain_acresses
+    repo.list.return_value = domain_actresses
 
     result = actress_list_use_case(repo)
     repo.list.assert_called_with()
-    assert result == domain_acresses
+    assert result == domain_actresses

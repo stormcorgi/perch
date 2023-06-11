@@ -1,17 +1,28 @@
 import abc
 
+from perch.domain.Actress import Actress
 from perch.domain.Movie import Movie
 
 
 class IMovieRepo(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def search_by_actress_id(self) -> list[Movie]:
-        """Search Movie by actress id"""
+    def search_by_actress(self, actress: Actress) -> list[Movie]:
+        """Search Movie by actress"""
         pass
 
     @abc.abstractmethod
-    def search_by_actress_name(self) -> list[Movie]:
-        """Search Movie by actress name"""
+    def search_by_tag(self) -> list[Movie]:
+        """Search Movie by tag"""
+        pass
+
+    @abc.abstractmethod
+    def search_by_name(self) -> Movie:
+        """Search Movie by name"""
+        pass
+
+    @abc.abstractmethod
+    def search_by_id(self) -> Movie:
+        """Search Movie by id"""
         pass
 
     @abc.abstractmethod
@@ -25,11 +36,11 @@ class IMovieRepo(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def search_by_name(self) -> Movie:
-        """Search Movie by name"""
+    def delete(self) -> Movie:
+        """Delete Movie"""
         pass
 
     @abc.abstractmethod
-    def search_by_id(self) -> Movie:
-        """Search Movie by id"""
+    def update(self) -> Movie:
+        """Update new Movie"""
         pass
