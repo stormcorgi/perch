@@ -2,8 +2,7 @@ import pytest
 
 from perch.domain.Actress import Actress
 from perch.domain.Movie import Movie
-from perch.repository.MemRepo import MemMovieRepo
-from perch.repository.MemRepo import MemMovieRepo
+from perch.repository.MemRepo import MemItemRepo
 
 
 @pytest.fixture
@@ -128,20 +127,27 @@ def movies_dicts():
 
 
 def test_repository_list_without_parameters(movies_dicts):
-    repo = MemMovieRepo(movies_dicts)
+    repo = MemItemRepo(movies_dicts)
     movies = [Movie.from_dict(i) for i in movies_dicts]
     assert repo.list() == movies
 
 
+def test_repository_list_actress(movies_dicts):
+    repo = MemItemRepo(movies_dicts)
+    movie = repo.search_by_id("L09HFIKE5N4O0")
+    if movie is not None:
+        assert repo.list_folders(movie) is not None
+
+
 def test_repository_add(movies_dicts):
-    repo = MemMovieRepo([movies_dicts[0]])
+    repo = MemItemRepo([movies_dicts[0]])
     movies = [Movie.from_dict(i) for i in movies_dicts]
     repo.add(movies_dicts[1])
     assert repo.list() == movies
 
 
 def test_repository_delete(movies_dicts):
-    repo = MemMovieRepo(movies_dicts)
+    repo = MemItemRepo(movies_dicts)
     movies = [Movie.from_dict(i) for i in movies_dicts]
     repo.delete("L09HFIKE5N4O0")
     assert repo.list()[0].to_dict() == movies[1].to_dict()
@@ -149,7 +155,7 @@ def test_repository_delete(movies_dicts):
 
 
 def test_repository_update(movies_dicts):
-    repo = MemMovieRepo([movies_dicts[0]])
+    repo = MemItemRepo([movies_dicts[0]])
     movies = [Movie.from_dict(i) for i in movies_dicts]
     # update existing data
     movies_dicts[1]["url"] = "changed"
@@ -164,7 +170,7 @@ def test_repository_update(movies_dicts):
 
 
 def test_repository_search_by_id(movies_dicts):
-    repo = MemMovieRepo(movies_dicts)
+    repo = MemItemRepo(movies_dicts)
     target = repo.search_by_id("LHLC3F8KFALUE")
     if target is not None:
         assert target.name == "AAAA-012"
@@ -175,7 +181,7 @@ def test_repository_search_by_id(movies_dicts):
 
 
 def test_repository_search_by_name(movies_dicts):
-    repo = MemMovieRepo(movies_dicts)
+    repo = MemItemRepo(movies_dicts)
     target = repo.search_by_name("AAAA-012")
     if target is not None:
         assert target.id == "LHLC3F8KFALUE"
@@ -186,14 +192,14 @@ def test_repository_search_by_name(movies_dicts):
 
 
 def test_search_by_actress(movies_dicts, actress_dicts):
-    repo = MemMovieRepo(movies_dicts)
+    repo = MemItemRepo(movies_dicts)
 
-    result = repo.search_by_actress(Actress.from_dict(actress_dicts[0]))
+    result = repo.search_by_folder(Actress.from_dict(actress_dicts[0]))
     assert result[0].id == "L09HFIKE5N4O0"
 
 
 def test_search_by_tag(movies_dicts):
-    repo = MemMovieRepo(movies_dicts)
+    repo = MemItemRepo(movies_dicts)
 
     result = repo.search_by_tag("Star")
     assert result[0].id == "L09HFIKE5N4O0"

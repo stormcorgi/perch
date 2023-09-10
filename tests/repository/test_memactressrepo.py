@@ -2,8 +2,8 @@ import pytest
 
 from perch.domain.Actress import Actress
 from perch.domain.Movie import Movie
-from perch.repository.MemRepo import MemActressRepo
-from perch.repository.MemRepo import MemMovieRepo
+from perch.repository.MemRepo import MemFolderRepo, MemItemRepo
+from perch.repository.IFolderRepo import IFolderRepo
 
 
 @pytest.fixture
@@ -33,20 +33,20 @@ def actress_dicts():
 
 
 def test_repository_list_without_parameters(actress_dicts):
-    repo = MemActressRepo(actress_dicts)
+    repo = MemFolderRepo(actress_dicts)
     actresses = [Actress.from_dict(i) for i in actress_dicts]
     assert repo.list() == actresses
 
 
 def test_repository_add(actress_dicts):
-    repo = MemActressRepo([actress_dicts[0]])
+    repo = MemFolderRepo([actress_dicts[0]])
     actresses = [Actress.from_dict(i) for i in actress_dicts]
     repo.add(actress_dicts[1])
     assert repo.list() == actresses
 
 
 def test_repository_search_by_id(actress_dicts):
-    repo = MemActressRepo(actress_dicts)
+    repo = MemFolderRepo(actress_dicts)
     target = repo.search_by_id("KYBK5NZTEWDMP")
     if target is not None:
         assert target.name == "伊織もえ"
@@ -57,7 +57,7 @@ def test_repository_search_by_id(actress_dicts):
 
 
 def test_repository_search_by_name(actress_dicts):
-    repo = MemActressRepo(actress_dicts)
+    repo = MemFolderRepo(actress_dicts)
     target = repo.search_by_name("伊織もえ")
     if target is not None:
         assert target.id == "KYBK5NZTEWDMP"

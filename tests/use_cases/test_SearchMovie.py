@@ -2,8 +2,7 @@ from unittest import mock
 import pytest
 
 from perch.domain.Actress import Actress
-from perch.domain.Movie import Movie
-from perch.repository.MemRepo import MemMovieRepo
+from perch.repository.MemRepo import MemItemRepo
 from perch.use_cases.SearchMovie import movie_use_case_search_by_actress
 
 
@@ -105,7 +104,6 @@ def domain_movies():
 
 
 def test_movie_use_case_search_by_actress(domain_movies, domain_actresses):
-    repo = MemMovieRepo(domain_movies)
-
+    repo = MemItemRepo(domain_movies)
     result = movie_use_case_search_by_actress(repo, domain_actresses[-1])
     assert result[0].to_dict() == domain_movies[0]
