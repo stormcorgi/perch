@@ -1,72 +1,81 @@
 from typing import Optional
-from perch.domain.Actress import Actress
-from perch.domain.Movie import Movie
-from perch.repository.IActressRepo import IActressRepo
-from perch.repository.IMovieRepo import IMovieRepo
+from perch.domain.Folder import Folder
+from perch.domain.Item import Item
+from perch.repository.IFolderRepo import IFolderRepo
+from perch.repository.IItemRepo import IItemRepo
 
 
-class MemActressRepo(IActressRepo):
+class MemFolderRepo(IFolderRepo):
     def __init__(self, data: list[dict]):
         self.data = data
 
-    def list(self) -> list[Actress]:
-        return [Actress.from_dict(i) for i in self.data]
+    def list(self) -> list[Folder]:
+        return [Folder.from_dict(i) for i in self.data]
 
-    def add(self, actress: dict) -> int:
-        self.data.append(actress)
+    def list_item_in_folder(self, folder: Folder):
+        return MemItemRepo(self.data).search_by_folder(folder)
+
+    def add(self, folder: dict) -> int:
+        self.data.append(folder)
         return 0
 
-    def search_by_id(self, id: str) -> Optional[Actress]:
-        for a in self.list():
-            if a.id == id:
-                return a
+    def search_by_id(self, id: str) -> Optional[Folder]:
+        for folder in self.list():
+            if folder.id == id:
+                return folder
         return None
 
-    def search_by_name(self, name: str) -> Optional[Actress]:
-        for a in self.list():
-            if a.name == name:
-                return a
+    def search_by_name(self, name: str) -> Optional[Folder]:
+        for folder in self.list():
+            if folder.name == name:
+                return folder
         return None
 
 
-class MemMovieRepo(IMovieRepo):
+class MemItemRepo(IItemRepo):
     def __init__(self, data: list[dict]):
         self.data = data
 
-    def search_by_id(self, id: str) -> Optional[Movie]:
-        for m in self.list():
-            if m.id == id:
-                return m
+    def search_by_id(self, id: str) -> Optional[Item]:
+        for item in self.list():
+            if item.id == id:
+                return item
         return None
 
-    def search_by_name(self, name: str) -> Optional[Movie]:
-        for m in self.list():
-            if m.name == name:
-                return m
+    def search_by_name(self, name: str) -> Optional[Item]:
+        for item in self.list():
+            if item.id == name:
+                return item
         return None
 
-    def search_by_actress(self, actress: Actress) -> list[Movie]:
-        return [m for m in self.list() for f in m.folders if f == actress.id]
+    def search_by_folder(self, folder: Folder) -> list[Item]:
+        return [i for i in self.list() for f in i.folders if f == folder.id]
 
-    def search_by_tag(self, tag: str) -> list[Movie]:
-        return [m for m in self.list() for t in m.tags if t == tag]
+    def search_by_tag(self, tag: str) -> list[Item]:
+        return [i for i in self.list() for t in i.tags if t == tag]
 
-    def list(self) -> list[Movie]:
-        return [Movie.from_dict(i) for i in self.data]
+    def list(self) -> list[Item]:
+        return [Item.from_dict(i) for i in self.data]
 
-    def add(self, movie: dict) -> int:
-        self.data.append(movie)
+    def list_folders(self, item: Item):
+        return item.folders
+
+    def add(self, item: dict) -> int:
+        self.data.append(item)
         return 0
 
     def delete(self, id: str) -> int:
-        self.data = [Movie.to_dict(m) for m in self.list() if m.id != id]
+        self.data = [Item.to_dict(i) for i in self.list() if i.id != id]
         return 0
 
-    def update(self, movie: dict) -> int:
-        if movie not in self.list():
-            self.add(movie)
-            return 0
-        else:
-            self.delete(movie)
-            self.add(movie)
-            return 0
+    def update(self, item: dict) -> int:
+        try:
+            if item not in self.list():
+                self.add(item)
+                return 0
+            else:
+                self.delete(item)
+                self.add(item)
+                return 0
+        except:
+            return 1
