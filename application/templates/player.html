@@ -2,15 +2,16 @@
     {% include "./parts/bootstrap-head.html" %}
     <title>{{filename}} - perch</title>
 </head>
+
 <body>
     {% include "./parts/header.html" %}
-    <a href="vlc://smb://100.64.1.170/share/videos.library/images/{{filepath}}/{{filename}}.mp4">
+    <a href="vlc://{{lib_path}}/images/{{movie.filepath}}/{{movie.filename}}.{{movie.ext}}">
         <h3 class="text-center">{{filename}}</h3>
     </a>
     <div class="container">
         <video controls width="100%" preload="metadata"
-            poster="/images/{{filepath}}/{{filename}}_thumbnail.png"
-            src="/images/{{filepath}}/{{filename}}.mp4"></video>
+            poster="static/eagle_library/images/{{movie.id}}.info/{{movie.name}}_thumbnail.png"
+            src="static/eagle_library/images/{{movie.id}}.info/{{movie.name}}.{{movie.ext}}"></video>
     </div>
     </div>
     <h6 class="text-center text-muted">女優:
@@ -31,10 +32,10 @@
     </p>
 
     <div class="rate py-0 text-white mt-2">
-        <form action="/movie/{{fileid}}" method="POST">
+        <form action="/movie/{{movie.id}}" method="POST">
             <div class="rating">
                 {% for i in range(1,6) %}
-                {% if 6 - star == i %}
+                {% if 6 - movie.star == i %}
                 <input type="radio" name="rating" value={{i}} id={{i}} checked><label for={{i}}>☆</label>
                 {% else %}
                 <input type="radio" name="rating" value={{i}} id={{i}}><label for={{i}}>☆</label>
@@ -56,4 +57,5 @@
 
     {% include "./parts/bootstrap-js.html" %}
 </body>
+
 </html>

@@ -16,10 +16,10 @@
             {% if loop.index % 2 == 0 %}
             <div class="col card text-white">
                 <a href="actress/{{actress.name}}">
-                <img class="card-img-top img-thumbnail img-responsive" src="/images/{{actress.facepath}}">
-                <div class="card-body">
-                    <p class="card-text small text-muted text-nowrap">{{actress.name}}({{actress.count}})</p>
-                </div>
+                    <img class="card-img-top img-thumbnail img-responsive" src="static/images/{{actress.facepath}}">
+                    <div class="card-body">
+                        <p class="card-text small text-muted text-nowrap">{{actress.name}}({{actress.count}})</p>
+                    </div>
                 </a>
             </div>
         </div>
@@ -27,10 +27,10 @@
             {% else %}
             <div class="col card text-white">
                 <a href="actress/{{actress.name}}">
-                <img class="card-img-top img-thumbnail img-responsive" src="/images/{{actress.facepath}}">
-                <div class="card-body">
-                    <p class="card-text small text-muted text-nowrap">{{actress.name}}({{actress.count}})</p>
-                </div>
+                    <img class="card-img-top img-thumbnail img-responsive" src="static/images/{{actress.facepath}}">
+                    <div class="card-body">
+                        <p class="card-text small text-muted text-nowrap">{{actress.name}}({{actress.count}})</p>
+                    </div>
                 </a>
             </div>
             {% endif %}
