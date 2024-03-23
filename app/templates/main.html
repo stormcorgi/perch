@@ -1,0 +1,75 @@
+<html>
+
+<head>
+    {% include "./parts/bootstrap-head.html" %}
+    <title>perch - web assistant for Eagle movie library</title>
+</head>
+
+<body>
+    {% include "./parts/header.html" %}
+    <h1 class=text-center>perch</h1>
+    <h6 class="text-muted text-center">- web assistant for Eagle mp4/pdf library -</h6>
+    <div class="container">
+        <h5 class="text-muted">actress</h5>
+        <div class="row row-cols-2">
+            {% for actress in actresses %}
+            {% if loop.index % 2 == 0 %}
+            <div class="col card text-white">
+                <a href="actress/{{actress.name}}">
+                    <img class="card-img-top img-thumbnail img-responsive" src="static/images/{{actress.facepath}}">
+                    <div class="card-body">
+                        <p class="card-text small text-muted text-nowrap">{{actress.name}}({{actress.count}})</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            {% else %}
+            <div class="col card text-white">
+                <a href="actress/{{actress.name}}">
+                    <img class="card-img-top img-thumbnail img-responsive" src="static/images/{{actress.facepath}}">
+                    <div class="card-body">
+                        <p class="card-text small text-muted text-nowrap">{{actress.name}}({{actress.count}})</p>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <br>
+        <h5 class="text-muted">tags</h5>
+        <!--
+        <div class="row">
+        -->
+        {% for tag in tags %}
+        <span class="badge rounded-pill bg-info">
+            <a href="tag/{{tag.tag}}" class="text-white">{{tag.tag}}</a>
+
+            <!--
+            {% if loop.index % 2 == 0 %}
+            <div class="col">
+                <a href="tag/{{tag.tag}}">{{tag.tag}}</a>
+            </div>
+        </div>
+        <div class="row">
+            {% else %}
+            <div class="col">
+                <a href="tag/{{tag.tag}}">{{tag.tag}}</a>
+            </div>
+            {% endif %}
+
+            -->
+        </span>
+        {% endfor %}
+        <!--
+        </div>
+        --!>
+        <br>
+        <h5 class="text-muted">tools</h5>
+        <a href="admin">admin</a>
+        <a href="random">random</a>
+    </div>
+    {% include "./parts/bootstrap-js.html" %}
+</body>
+
+</html>

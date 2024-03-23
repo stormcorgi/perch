@@ -1,0 +1,61 @@
+<html>
+
+<head>
+    {% include "./parts/bootstrap-head.html" %}
+    <title>タグ - perch</title>
+</head>
+
+<body>
+    {% include "./parts/header.html" %}
+
+    <h3 class="text-center">{{tag}}</h3>
+    <div class="container">
+        <div class="row row-cols-2">
+            {% for movie in movies %}
+            {% if loop.index % 2 == 0 %}
+            <div class="col" style="width:25%">
+                <div class="thumbnail">
+                    <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
+                        <img class="img-thumbnail" style="width:100%"
+                            src="/images/{{movie.fileid}}.info/{{movie.filename}}_thumbnail.png">
+                    </a>
+                </div>
+                <p class="text-center text-truncate">
+                    <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
+                        {{movie.filename}}
+                    </a>
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            {% else %}
+            <div class="col" style="width:25%">
+                <div class="thumbnail">
+                    <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
+                        <img class="img-thumbnail" style="width:100%"
+                            src="/images/{{movie.fileid}}.info/{{movie.filename}}_thumbnail.png">
+                    </a>
+                </div>
+                <p class="text-center text-truncate">
+                    <a href="../player?id={{movie.fileid}}&name={{movie.filename}}">
+                        {{movie.filename}}
+                    </a>
+                </p>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+    </div>
+    </div>
+
+    <footer id="footer" class="fixed-bottom">
+        <div class="container">
+            <p class="text-muted text-right">Tag:{{tag}}</p>
+        </div>
+    </footer>
+
+    {% include "./parts/bootstrap-js.html" %}
+</body>
+
+</html>
