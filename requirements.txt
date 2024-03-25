@@ -1,5 +1,5 @@
 astroid==2.11.7
-attrs==22.1.0
+attrs==23.2.0
 beautifulsoup4==4.11.1
 bs4==0.0.1
 certifi==2022.6.15
