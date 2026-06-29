@@ -1,8 +1,10 @@
 """ use flask and perchdb.py """
 import datetime
+import glob
 import logging
 import os
 import random
+import unicodedata
 
 import flask.app
 from flask import Flask, jsonify, redirect, render_template, request, url_for, send_from_directory
@@ -109,6 +111,17 @@ def create_app() -> flask.app.Flask:
     @app.route("/stream/<fileid>")
     def stream_video(fileid):
         """Stream video file from NAS mount with range request support"""
+
+        def _find_nfc(folder_path, name):
+            """Return on-disk filename matching name under NFC/NFD-insensitive compare."""
+            if not os.path.isdir(folder_path):
+                return None
+            nfc_name = unicodedata.normalize("NFC", name)
+            for entry in os.listdir(folder_path):
+                if unicodedata.normalize("NFC", entry) == nfc_name:
+                    return entry
+            return None
+
         movie = dbcon.Movie.get_by_fileid(fileid, current_session)
         if not movie:
             return "not found", 404
@@ -118,9 +131,14 @@ def create_app() -> flask.app.Flask:
         lib_path = app.config["LIB_PATH"]
         folder_path = os.path.join(lib_path, "images", folder)
 
+        # filename may have NFD/NFC drift vs on-disk name — resolve via NFC compare
+        actual = _find_nfc(folder_path, filename)
+        if actual is None:
+            return "video file not found on disk", 404
+
         return send_from_directory(
             folder_path,
-            filename,
+            actual,
             conditional=True,
             as_attachment=False,
         )
