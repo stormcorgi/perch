@@ -45,3 +45,30 @@
 
 <!-- Spacer for fixed navbar -->
 <div class="h-14"></div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+
+    function applyTheme(theme) {
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+      localStorage.setItem('perch-theme', theme);
+    }
+
+    // 初期化: 保存済み or システム設定
+    var saved = localStorage.getItem('perch-theme');
+    if (saved) {
+      applyTheme(saved);
+    } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+      applyTheme('light');
+    } else {
+      applyTheme('dark');
+    }
+
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.contains('dark');
+      applyTheme(isDark ? 'light' : 'dark');
+    });
+  })();
+</script>

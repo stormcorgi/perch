@@ -164,6 +164,51 @@
         newTagInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') addTag();
         });
+
+        // --- Landscape-only lock on fullscreen (YouTube-style) ---
+        // screen.orientation.lock('landscape') はAndroid Chromeだと実質 landscape-primary 固定で
+        // 上下回転（180°）が効かない。許可オプション 'landscape' だけでブラウザが
+        // 固定してしまうため、自前でポートレートに戻す方式で「横向きのみ許可」を実現する。
+
+        var _fsOrientationTimer = null;
+        var _isInPerchFullscreen = false;
+
+        function isLandscape() {
+            if (!screen.orientation) return true; // PC等は判定不能なので通す
+            return screen.orientation.type.startsWith('landscape');
+        }
+
+        // 50ms おきにチェックし、ポートレートになったら即座に横向きに戻す
+        function startEnforceLandscape() {
+            stopEnforceLandscape();
+            _isInPerchFullscreen = true;
+            _fsOrientationTimer = setInterval(function () {
+                if (!_isInPerchFullscreen) { stopEnforceLandscape(); return; }
+                if (!isLandscape()) {
+                    screen.orientation.lock('landscape').catch(function () {});
+                }
+            }, 50);
+        }
+
+        function stopEnforceLandscape() {
+            _isInPerchFullscreen = false;
+            clearInterval(_fsOrientationTimer);
+            _fsOrientationTimer = null;
+            if (screen.orientation && screen.orientation.unlock) {
+                try { screen.orientation.unlock(); } catch (e) {}
+            }
+        }
+
+        // フルスクリーン変化時のみ横向きロック。再生時は何もしない
+        function onFullscreenStateChange() {
+            if (document.fullscreenElement || document.webkitFullscreenElement) {
+                startEnforceLandscape();
+            } else {
+                stopEnforceLandscape();
+            }
+        }
+        document.addEventListener('fullscreenchange', onFullscreenStateChange);
+        document.addEventListener('webkitfullscreenchange', onFullscreenStateChange);
     });
     </script>
 
