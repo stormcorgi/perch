@@ -28,6 +28,24 @@ def init_db(file_path):
     # create DB tables inherited Base
     Base.metadata.create_all(engine)
 
+    # ── lightweight migrations ──────────────────────────
+    # tag.target_type (movie|book) — add if missing
+    from sqlalchemy import inspect as _insp, text as _text
+    cols = [c["name"] for c in _insp(engine).get_columns("tag")]
+    if "target_type" not in cols:
+        logging.info("migrating: add tag.target_type")
+        with engine.connect() as conn:
+            conn.execute(
+                _text("ALTER TABLE tag ADD COLUMN target_type TEXT DEFAULT 'movie'")
+            )
+            conn.commit()
+    # backfill existing rows (NULL → 'movie')
+    with engine.connect() as conn:
+        conn.execute(
+            _text("UPDATE tag SET target_type='movie' WHERE target_type IS NULL")
+        )
+        conn.commit()
+
 
 class Actress(Base):
     """table Actress : id, actressid, name"""
@@ -126,27 +144,30 @@ class Movie(Base):
 
 
 class Tag(Base):
-    """table Tag : tagid, fileid, tag"""
+    """table Tag : tagid, fileid, tag, target_type"""
     __tablename__ = 'tag'
     tagid = Column(Integer, primary_key=True, unique=True)
     fileid = Column(String)
     tag = Column(String)
+    target_type = Column(String, default="movie")  # 'movie' | 'book'
 
-    def __init__(self, fileid="", tag=""):
+    def __init__(self, fileid="", tag="", target_type="movie"):
         self.fileid = fileid
         self.tag = tag
+        self.target_type = target_type
 
     def __repr__(self):
         return f"Tag<{self.tagid},{self.fileid},{self.tag}>"
 
     @classmethod
-    def all(cls, session):
-        """Query Tag table and make unique, then return all unique Tag object with count"""
+    def all(cls, session, target_type=None):
+        """Query Tag table and make unique, then return all unique Tag object with count.
+        If target_type given ('movie'|'book'), filter only those."""
         from sqlalchemy import func
-        tag_rows = session.query(cls.tag, func.count(cls.fileid).label("count"))\
-            .group_by(cls.tag)\
-            .order_by(cls.tag)\
-            .all()
+        q = session.query(cls.tag, func.count(cls.fileid).label("count"))
+        if target_type:
+            q = q.filter(cls.target_type == target_type)
+        tag_rows = q.group_by(cls.tag).order_by(cls.tag).all()
         tag_obj_list = []
         for tag_str, cnt in tag_rows:
             t = cls(0, tag_str)
@@ -177,3 +198,66 @@ class Tag(Base):
         session.query(cls).filter(
             cls.fileid == fileid, cls.tag == tag).delete()
         session.commit()
+
+
+class Book(Base):
+    """table Book : id, name, fileid, ext, page_count, size, created_at, updated_at"""
+    __tablename__ = 'book'
+    id         = Column(Integer, primary_key=True, unique=True)
+    name       = Column(String)
+    fileid     = Column(String, unique=True)
+    ext        = Column(String, default="pdf")
+    page_count = Column(Integer, default=0)
+    size       = Column(Integer, default=0)
+    created_at = Column(Integer, default=0)  # unix ms
+    updated_at = Column(Integer, default=0)  # unix ms
+
+    def __repr__(self):
+        return f"Book<{self.id},{self.name},{self.fileid},{self.ext}>"
+
+    @classmethod
+    def all(cls, session):
+        return session.query(cls).order_by(cls.name).all()
+
+    @classmethod
+    def count_all(cls, session):
+        return session.query(cls).count()
+
+    @classmethod
+    def get_by_fileid(cls, search_fileid, session):
+        return session.query(cls).filter(cls.fileid == search_fileid).first()
+
+    @classmethod
+    def get_by_id(cls, search_id, session):
+        return session.query(cls).filter(cls.id == search_id).first()
+
+    @classmethod
+    def get_by_tag(cls, search_tag, session):
+        books = []
+        tag_records = session.query(Tag).filter(
+            Tag.tag == search_tag, Tag.target_type == "book").all()
+        for tag_record in tag_records:
+            books.append(session.query(cls).filter(
+                cls.fileid == tag_record.fileid).first())
+        return books
+
+    @classmethod
+    def add_or_update(cls, session, *, name, fileid, ext="pdf",
+                      page_count=0, size=0, created_at=0, updated_at=0):
+        """Insert or update a book row by fileid (upsert)."""
+        existing = session.query(cls).filter(cls.fileid == fileid).first()
+        if existing:
+            existing.name = name
+            existing.ext = ext
+            existing.page_count = page_count
+            existing.size = size
+            existing.created_at = created_at
+            existing.updated_at = updated_at
+            session.commit()
+            return existing
+        b = cls(name=name, fileid=fileid, ext=ext,
+                page_count=page_count, size=size,
+                created_at=created_at, updated_at=updated_at)
+        session.add(b)
+        session.commit()
+        return b

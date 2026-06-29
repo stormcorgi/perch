@@ -12,6 +12,7 @@ log/*.log
 instance/
 instance/*.sqlite
 perch/config.py
+perch/static/eagle_book_library
 __pycache__
 .venv
 *.sh

@@ -3,7 +3,7 @@ import logging
 import threading
 from sqlalchemy.ext.declarative import declarative_base
 from perch.parser.eagle import parse_actress_name_id, parse_all_file_metadatas
-from perch.db.connection import Actress, Tag, Movie
+from perch.db.connection import Actress, Tag, Movie, Book
 
 Base = declarative_base()
 
@@ -129,6 +129,63 @@ def drop_db(session):
     """drop all DB tables"""
     session.query(Actress).delete()
     session.query(Movie).delete()
+    session.query(Book).delete()
     session.query(Tag).delete()
     session.commit()
     logging.warn("DB droped!")
+
+
+# ── Book library sync ──────────────────────────────────
+
+def update_books_from_lib(lib_path, session):
+    """Scan eagle book library at lib_path and upsert into book table.
+    Also adds tags with target_type='book'."""
+    meta = parse_all_file_metadatas(lib_path)
+    if not meta:
+        logging.info("update_books_from_lib: no metadata found in %s", lib_path)
+        return
+
+    json_fileids = set(fileid for d in meta for fileid in d.keys())
+    on_db = {b.fileid: b for b in session.query(Book).all()}
+    new_ids = json_fileids - set(on_db.keys())
+
+    # Upsert books
+    for d in meta:
+        for fileid, info in d.items():
+            name = info.get("filename", "")
+            ext = info.get("ext", "pdf")
+            size = info.get("size", 0)
+            mtime = info.get("mtime", 0)
+            if fileid in on_db:
+                b = on_db[fileid]
+                b.name = name
+                b.ext = ext
+                b.size = size
+                b.updated_at = mtime
+            else:
+                session.add(Book(
+                    name=name, fileid=fileid, ext=ext,
+                    size=size, created_at=mtime, updated_at=mtime,
+                ))
+    session.commit()
+    logging.info("update_books_from_lib: %d books total (%d new)",
+                 len(json_fileids), len(new_ids))
+
+    # Sync tags (target_type='book')
+    all_tags = set()
+    for d in meta:
+        for info in d.values():
+            for t in info.get("tags", []):
+                all_tags.add(t)
+    on_db_tags = {t.tag for t in session.query(Tag).filter(
+        Tag.target_type == "book").all()}
+    new_tags = all_tags - on_db_tags
+    for d in meta:
+        for info in d.values():
+            for t in info.get("tags", []):
+                if t in new_tags:
+                    session.add(Tag(fileid=fileid, tag=t, target_type="book"))
+    # Note: we don't delete stale book tags — keep it simple
+    session.commit()
+    logging.info("update_books_from_lib: %d book tags (%d new)",
+                 len(all_tags), len(new_tags))

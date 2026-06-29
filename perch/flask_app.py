@@ -4,6 +4,7 @@ import glob
 import logging
 import os
 import random
+import threading
 import unicodedata
 
 import flask.app
@@ -50,14 +51,95 @@ def create_app() -> flask.app.Flask:
 
     @app.route("/")
     def render_main():
-        """render main page"""
+        """render main page (video library)"""
         return render_template(
             "main.html",
             actresses=dbcon.Actress.all(current_session),
             tags=dbcon.Tag.all(current_session),
             lib_url="/static/eagle_library",
-            lib_path=app.config["LIB_PATH"],
+            lib_path=app.config["LIB_PATH_VIDEO"],
+            active_lib="video",
         )
+
+    @app.route("/books")
+    def render_books():
+        """render book library list page"""
+        available = os.path.isdir(app.config["LIB_PATH_BOOK"])
+        books = dbcon.Book.all(current_session) if available else []
+        tags = dbcon.Tag.all(current_session, target_type="book") if available else []
+        return render_template(
+            "books.html",
+            books=books,
+            tags=tags,
+            lib_url="/static/eagle_book_library",
+            lib_path=app.config["LIB_PATH_BOOK"],
+            active_lib="book",
+            lib_available=available,
+        )
+
+    @app.route("/viewer")
+    def rend_viewer():
+        """render PDF.js viewer for a book"""
+        fileid = request.args.get("id", default=None, type=str)
+        if not fileid:
+            return "<html><body>wrong request. fileid not exists</body></html>"
+        book = dbcon.Book.get_by_fileid(fileid, current_session)
+        if not book:
+            return "<html><body>wrong request. book not exists</body></html>"
+        tags = dbcon.Tag.get_by_movie(fileid, current_session)
+        pdf_url = request.url_root.rstrip("/") + url_for("stream_book", fileid=fileid)
+        return render_template(
+            "viewer.html",
+            book=book,
+            tags=tags,
+            lib_url="/static/eagle_book_library",
+            lib_path=app.config["LIB_PATH_BOOK"],
+            pdf_url=pdf_url,
+        )
+
+    @app.route("/stream/book/<fileid>")
+    def stream_book(fileid):
+        """Stream book PDF file from NAS mount"""
+
+        def _find_nfc(folder_path, name):
+            if not os.path.isdir(folder_path):
+                return None
+            nfc_name = unicodedata.normalize("NFC", name)
+            for entry in os.listdir(folder_path):
+                if unicodedata.normalize("NFC", entry) == nfc_name:
+                    return entry
+            return None
+
+        book = dbcon.Book.get_by_fileid(fileid, current_session)
+        if not book:
+            return "not found", 404
+
+        filename = book.name + "." + book.ext  # e.g. "ずりあや.pdf"
+        folder = f"{fileid}.info"
+        lib_path = app.config["LIB_PATH_BOOK"]
+        folder_path = os.path.join(lib_path, "images", folder)
+
+        actual = _find_nfc(folder_path, filename)
+        if actual is None:
+            return "book file not found on disk", 404
+
+        return send_from_directory(
+            folder_path,
+            actual,
+            conditional=True,
+            as_attachment=False,
+            mimetype="application/pdf",
+        )
+
+    @app.route("/api/books")
+    def api_books():
+        """JSON list of books (for future search)"""
+        books = dbcon.Book.all(current_session)
+        return jsonify([
+            {"id": b.id, "name": b.name, "fileid": b.fileid,
+             "ext": b.ext, "page_count": b.page_count, "size": b.size}
+            for b in books
+        ])
 
     @app.route("/actress/<name>")
     def rend_actress(name):
@@ -156,17 +238,24 @@ def create_app() -> flask.app.Flask:
     @app.route("/admin", methods=["GET", "POST"])
     def render_admin():
         if request.method == "GET":
-            return render_template("admin.html")
-        # POST section
-        if request.form["task"] == "update_db":
+            return render_template("admin.html", book_count=dbcon.Book.count_all(current_session))
+        task = request.form["task"]
+        if task == "update_db":
             thread = dbup.UpdateThread(app, current_session)
             thread.start()
             return redirect(url_for("render_admin"))
-
-        if request.form["task"] == "drop_db":
+        if task == "update_books":
+            book_lib = app.config["LIB_PATH_BOOK"]
+            thread = threading.Thread(
+                target=dbup.update_books_from_lib,
+                args=(book_lib, current_session),
+                daemon=True,
+            )
+            thread.start()
+            return redirect(url_for("render_admin"))
+        if task == "drop_db":
             dbup.drop_db(current_session)
             return redirect(url_for("render_main"))
-
         return f"""<html><body>unknown task : {request.form["task"]}</body></html>"""
 
     @app.route("/player/tag/add", methods=["POST"])

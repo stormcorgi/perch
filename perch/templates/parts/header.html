@@ -7,7 +7,17 @@
     </a>
 
     <!-- Nav links -->
-    <div class="hidden sm:flex items-center gap-6 text-sm">
+    <div class="hidden sm:flex items-center gap-1 text-sm">
+      <a href="../"
+        class="px-3 py-1.5 rounded-md transition-colors
+               {% if active_lib == 'video' or not active_lib %}bg-rose-500/10 text-rose-600 dark:text-rose-400{% else %}text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100{% endif %}">
+        動画
+      </a>
+      <a href="../books"
+        class="px-3 py-1.5 rounded-md transition-colors
+               {% if active_lib == 'book' %}bg-amber-500/10 text-amber-600 dark:text-amber-400{% else %}text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100{% endif %}">
+        同人誌
+      </a>
       <a href="../"
         class="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
         トップ
