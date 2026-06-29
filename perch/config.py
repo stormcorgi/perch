@@ -3,7 +3,7 @@
 """
 
 import os
-PROD_LIB = os.path.join(os.getcwd(), "perch/static/eagle_lib")
+PROD_LIB = os.path.join(os.getcwd(), "perch/static/eagle_library")
 PROD_DB = os.path.join(os.getcwd(), "instance/perch.sqlite")
 
 DEV_LIB = os.path.join(os.getcwd(), "tests/sample.library")

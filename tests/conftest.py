@@ -1,7 +1,7 @@
 """generate fixtures"""
 import os
 import pytest
-from perch import create_app
+from perch.flask_app import create_app
 from perch.db.connection import init_db, generate_session
 from perch.db.update import update_actress, update_newfiles, update_tags, update_count
 

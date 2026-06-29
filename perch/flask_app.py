@@ -5,7 +5,7 @@ import os
 import random
 
 import flask.app
-from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask import Flask, jsonify, redirect, render_template, request, url_for, send_from_directory
 
 import perch.db.connection as dbcon
 import perch.db.update as dbup
@@ -53,6 +53,7 @@ def create_app() -> flask.app.Flask:
             "main.html",
             actresses=dbcon.Actress.all(current_session),
             tags=dbcon.Tag.all(current_session),
+            lib_url="/static/eagle_library",
             lib_path=app.config["LIB_PATH"],
         )
 
@@ -67,6 +68,7 @@ def create_app() -> flask.app.Flask:
             "actress.html",
             actress=actress,
             movies=movies,
+            lib_url="/static/eagle_library",
             lib_path=app.config["LIB_PATH"],
         )
 
@@ -75,7 +77,7 @@ def create_app() -> flask.app.Flask:
         """render tag page"""
         movies = dbcon.Movie.get_by_tag(tag, current_session)
         return render_template(
-            "tags.html", tag=tag, movies=movies, lib_path=app.config["LIB_PATH"]
+            "tags.html", tag=tag, movies=movies, lib_url="/static/eagle_library", lib_path=app.config["LIB_PATH"]
         )
 
     @app.route("/player")
@@ -91,8 +93,7 @@ def create_app() -> flask.app.Flask:
         filename = request.args.get("name", default=None, type=str)
         tags = dbcon.Tag.get_by_movie(fileid, current_session)
         actresses = dbcon.Actress.get_by_movie(fileid, current_session)
-        if movie.star is None:
-            movie.star = 0
+        stream_url = request.url_root.rstrip("/") + url_for("stream_video", fileid=fileid)
         return render_template(
             "player.html",
             fileid=fileid,
@@ -100,8 +101,28 @@ def create_app() -> flask.app.Flask:
             filename=filename,
             actresses=actresses,
             tags=tags,
+            lib_url="/static/eagle_library",
             lib_path=app.config["LIB_PATH"],
-            star=movie.star,
+            stream_url=stream_url,
+        )
+
+    @app.route("/stream/<fileid>")
+    def stream_video(fileid):
+        """Stream video file from NAS mount with range request support"""
+        movie = dbcon.Movie.get_by_fileid(fileid, current_session)
+        if not movie:
+            return "not found", 404
+
+        filename = movie.filename + ".mp4"
+        folder = f"{fileid}.info"
+        lib_path = app.config["LIB_PATH"]
+        folder_path = os.path.join(lib_path, "images", folder)
+
+        return send_from_directory(
+            folder_path,
+            filename,
+            conditional=True,
+            as_attachment=False,
         )
 
     @app.route("/movie/<fileid>", methods=["POST"])
