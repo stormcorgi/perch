@@ -151,6 +151,16 @@ def create_app() -> flask.app.Flask:
             for b in books
         ])
 
+    @app.route("/actresses")
+    def rend_actresses():
+        """render full actress list"""
+        return render_template(
+            "actresses.html",
+            actresses=dbcon.Actress.all(current_session),
+            lib_url="/static/eagle_library",
+            active_lib="video",
+        )
+
     @app.route("/actress/<name>")
     def rend_actress(name):
         """render actress page"""
