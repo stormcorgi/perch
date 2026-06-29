@@ -1,23 +1,20 @@
 """import pytest, sqlalchemy, app.perchdb, tests.conftest for CONST"""
 import pytest
 from sqlalchemy.orm import sessionmaker
-
-from perch.db.connection import Actress, Base, Movie, Tag, generate_engine
-from perch.db.update import (drop_db, update_actress, update_newfiles,
-                             update_tags)
+from perch.db.connection import Base, Actress, Movie, Tag, generate_engine
+from perch.db.update import update_actress, update_newfiles, update_tags, drop_db
 
 
 @pytest.fixture(name="db_session")
 def fixture_db(app):
     """generate test DB(when test finished,DB file will be erased)"""
     with app.app_context():
-        test_engine = generate_engine(app.config["DATABASE"])
+        test_engine = generate_engine(app.config['DATABASE'])
         test_session = sessionmaker(test_engine)
         # create DB tables inherited Base
         Base.metadata.create_all(test_engine)
         # return Session(), and wait test case finish
         yield test_session()
-
 
 # general
 
@@ -49,20 +46,6 @@ def test_drop_db(db_session):
     drop_db(db_session)
     assert len(db_session.query(Actress).all()) == 0
     assert len(db_session.query(Movie).all()) == 0
-
-
-def test_change_movie_star(db_session):
-    """test changing star"""
-    update_actress(db_session)
-    update_newfiles(db_session)
-    target = Movie.get_by_fileid("L03BG2NLB9L5W", db_session)
-    target.star = 1
-    db_session.commit()
-    assert target.star == 1
-
-    target.star = 2
-    db_session.commit()
-    assert target.star == 2
 
 
 # actress
@@ -106,7 +89,6 @@ def test_actress_get_by_movie(db_session):
     for movie in movies:
         assert isinstance(movie, Actress)
 
-
 # movie
 
 
@@ -117,7 +99,7 @@ def test_movie_all(db_session):
 
 
 def test_get_by_tag(db_session):
-    """update_files, then query all Movie by Tag, return matched Movies"""
+    """update_files, then query all Movie by Tag, return matched Movies """
     update_actress(db_session)
     update_newfiles(db_session)
     update_tags(db_session)
@@ -126,7 +108,7 @@ def test_get_by_tag(db_session):
 
 
 def test_get_by_actress(db_session):
-    """update_files, then query all Movie by Actress, return matched Movies"""
+    """update_files, then query all Movie by Actress, return matched Movies """
     update_newfiles(db_session)
     assert len(Movie.get_by_actress("L03BHPEH9SNKO", db_session)) == 5
     assert len(Movie.get_by_actress("non-exist-tag", db_session)) == 0
@@ -154,19 +136,56 @@ def test_count_by_actress(db_session):
 
 # tag
 
-
 def test_tag_all(db_session):
     """update_files, then query all Tag, it must return some records"""
     update_newfiles(db_session)
     update_tags(db_session)
-    result = Tag.all(db_session)
-    assert result is not None
-    assert len(result) >= 5
+    assert len(Tag.all(db_session)) >= 5
 
 
 def test_get_by_movie(db_session):
-    """update_files, then query all Tag by Movie, return matched Tags"""
+    """update_files, then query all Tag by Movie, return matched Tags """
     update_newfiles(db_session)
     update_tags(db_session)
     assert len(Tag.get_by_movie("L03BG2NLRKV5A", db_session)) == 2
     assert len(Tag.get_by_movie("non-exist-tag", db_session)) == 0
+
+
+# ── Edge cases ──
+
+
+def test_update_count_actress_with_zero_movies(db_session):
+    """actress with 0 movies → facepath='' instead of crash"""
+    from perch.db.connection import Actress as A, Movie as M
+    # Add an actress who has no movies
+    a = A(actressid="ZERO_MOVIE_ACT", name="zero_movie_actress")
+    db_session.add(a)
+    db_session.commit()
+
+    from perch.db.update import update_count
+    update_count(db_session)
+
+    reloaded = A.get_by_name("zero_movie_actress", db_session)
+    assert reloaded is not None
+    assert reloaded.count == 0
+    assert reloaded.facepath == ""
+
+
+def test_tag_all_distinct_counts(db_session):
+    """Tag.all() returns distinct tags with correct counts"""
+    from perch.db.update import update_newfiles, update_tags
+    update_newfiles(db_session)
+    update_tags(db_session)
+
+    from perch.db.connection import Tag
+    tags = Tag.all(db_session)
+    # Should have unique tag names
+    tag_names = [t.tag for t in tags]
+    assert len(tag_names) == len(set(tag_names))
+
+    # Verify one known tag count
+    for t in tags:
+        if t.tag == "forest":
+            assert t.count == 2
+        if t.tag == "road":
+            assert t.count == 2

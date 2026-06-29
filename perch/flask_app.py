@@ -5,7 +5,7 @@ import os
 import random
 
 import flask.app
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, jsonify, redirect, render_template, request, url_for
 
 import perch.db.connection as dbcon
 import perch.db.update as dbup
@@ -129,6 +129,31 @@ def create_app() -> flask.app.Flask:
             return redirect(url_for("render_main"))
 
         return f"""<html><body>unknown task : {request.form["task"]}</body></html>"""
+
+    @app.route("/player/tag/add", methods=["POST"])
+    def add_tag():
+        """Add a tag to a movie via AJAX"""
+        data = request.get_json(force=True)
+        fileid = data.get("fileid")
+        tag = data.get("tag")
+        if not fileid or not tag:
+            return jsonify(success=False, error="missing fileid or tag"), 400
+        tag = tag.strip()
+        if not tag:
+            return jsonify(success=False, error="empty tag"), 400
+        was_added = dbcon.Tag.add_for_movie(fileid, tag, current_session)
+        return jsonify(success=True, added=was_added)
+
+    @app.route("/player/tag/remove", methods=["POST"])
+    def remove_tag():
+        """Remove a tag from a movie via AJAX"""
+        data = request.get_json(force=True)
+        fileid = data.get("fileid")
+        tag = data.get("tag")
+        if not fileid or not tag:
+            return jsonify(success=False, error="missing fileid or tag"), 400
+        dbcon.Tag.remove_for_movie(fileid, tag, current_session)
+        return jsonify(success=True)
 
     @app.route("/random")
     def jump_random():

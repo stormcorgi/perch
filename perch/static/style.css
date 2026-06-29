@@ -1,0 +1,124 @@
+/* Perch Custom Styles – Tailwind CSS 補完用 */
+
+/* --- Smooth scroll --- */
+html {
+  scroll-behavior: smooth;
+}
+
+/* --- Custom scrollbar (dark) --- */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #09090b;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* --- Light scrollbar --- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f4f4f5;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+  border-radius: 4px;
+}
+
+/* --- Actress card image --- */
+.actress-card img {
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.actress-card:hover img {
+  transform: scale(1.05);
+}
+.actress-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Movie thumbnail card --- */
+.movie-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.movie-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.movie-card img {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+/* --- Play overlay on movie thumbnails --- */
+.play-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.movie-card:hover .play-overlay {
+  opacity: 1;
+}
+
+/* --- Search transition --- */
+.search-hidden {
+  display: none;
+}
+
+/* --- Tag cloud --- */
+.tag-badge {
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+.tag-badge:hover {
+  transform: scale(1.05);
+}
+
+/* --- Navbar blur in supported browsers --- */
+@supports (backdrop-filter: blur(8px)) {
+  .navbar-blur {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* --- Video container --- */
+.video-bg {
+  background: radial-gradient(ellipse at center, #1a1a1a 0%, #000000 100%);
+}
+
+/* --- Theme toggle animation --- */
+.theme-toggle svg {
+  transition: transform 0.3s ease;
+}
+.theme-toggle:hover svg {
+  transform: rotate(30deg);
+}
+
+/* --- Truncate 2 lines for filenames --- */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --- Actress name truncation --- */
+.actress-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

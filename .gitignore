@@ -8,12 +8,13 @@ tests/sample.library/images/*/*.png
 tests/sample.library/images/*/*.jpg
 tests/*.sqlite
 tests/results
-**/*.log
-perch.sqlite
+log/*.log
 perch/config.py
 __pycache__
 .venv
+*.sh
 .DS_Store
 .coverage
 .pytest_cache
 .vscode
+.env
