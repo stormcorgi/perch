@@ -51,14 +51,24 @@ def create_app() -> flask.app.Flask:
 
     @app.route("/")
     def render_main():
-        """render main page (video library)"""
+        """render main page (video library + book summary)"""
+        video_lib = app.config["LIB_PATH_VIDEO"]
+        book_lib  = app.config["LIB_PATH_BOOK"]
+        book_available = os.path.isdir(book_lib)
+        books = dbcon.Book.all(current_session) if book_available else []
+        book_tags = dbcon.Tag.all(current_session, target_type="book") if book_available else []
         return render_template(
             "main.html",
             actresses=dbcon.Actress.all(current_session),
-            tags=dbcon.Tag.all(current_session),
+            tags=dbcon.Tag.all(current_session, target_type="movie"),
             lib_url="/static/eagle_library",
-            lib_path=app.config["LIB_PATH_VIDEO"],
+            lib_path=video_lib,
             active_lib="video",
+            books=books[:12],            # top page preview (latest 12)
+            book_tags=book_tags,
+            book_count=len(books),
+            book_lib_url="/static/eagle_book_library",
+            book_lib_available=book_available,
         )
 
     @app.route("/books")

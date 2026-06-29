@@ -1,7 +1,7 @@
 <html class="dark">
 <head>
     {% include "./parts/bootstrap-head.html" %}
-    <title>perch - web assistant for Eagle movie library</title>
+    <title>perch — Eagle library manager</title>
 </head>
 
 <body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 min-h-screen transition-colors duration-200">
@@ -12,7 +12,7 @@
         <!-- ========== Hero / Search Section ========== -->
         <div class="text-center mb-8">
             <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">perch</h1>
-            <p class="text-zinc-500 dark:text-zinc-500 mt-1 text-sm sm:text-base">web assistant for Eagle movie library</p>
+            <p class="text-zinc-500 dark:text-zinc-500 mt-1 text-sm sm:text-base">Eagle library manager — video &amp; books</p>
         </div>
 
         <!-- Search bar -->
@@ -103,6 +103,63 @@
                 </a>
                 {% endfor %}
             </div>
+        </section>
+
+        <!-- ========== Book (Doujin) Section ========== -->
+        <section class="mt-12">
+            <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                同人誌
+                <a href="books" class="ml-auto text-xs font-normal text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300">すべて見る →</a>
+            </h2>
+
+            {% if not book_lib_available %}
+            <div class="rounded-xl p-6 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-center text-zinc-500">
+                同人誌ライブラリがマウントされていません
+            </div>
+            {% elif books %}
+            <!-- Book tags -->
+            {% if book_tags %}
+            <div class="flex flex-wrap gap-2 mb-4">
+                {% for tag in book_tags[:20] %}
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+                             bg-amber-100 dark:bg-amber-900/30
+                             text-amber-800 dark:text-amber-300">{{tag.tag}}<span class="ml-1 opacity-60">({{tag.count}})</span></span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <!-- Book preview grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
+                {% for book in books[:12] %}
+                <a href="viewer?id={{book.fileid}}"
+                   class="block group rounded-xl overflow-hidden
+                          bg-white dark:bg-zinc-900
+                          border border-zinc-200 dark:border-zinc-800
+                          hover:border-amber-500/30 dark:hover:border-amber-500/30
+                          transition-all duration-200">
+                    <div class="aspect-[3/4] flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                        <img class="w-full h-full object-cover"
+                             src="{{book_lib_url}}/images/{{book.fileid}}.info/{{book.name}}_thumbnail.png"
+                             alt="{{book.name}}"
+                             loading="lazy"
+                             onerror="this.parentElement.innerHTML=`<div class='flex items-center justify-center w-full h-full bg-zinc-100 dark:bg-zinc-800 text-zinc-400'><svg class='w-8 h-8' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.5'><path stroke-linecap='round' stroke-linejoin='round' d='M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' /></svg></div>`" />
+                    </div>
+                    <div class="p-2">
+                        <p class="text-xs font-medium text-zinc-800 dark:text-zinc-200 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors truncate" title="{{book.name}}">
+                            {{book.name}}
+                        </p>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            <p class="text-xs text-zinc-500 mt-3 text-right">計 {{ book_count }} 冊</p>
+            {% else %}
+            <div class="rounded-xl p-6 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-center text-zinc-500">
+                同人誌データがありません。Admin から更新してください。
+            </div>
+            {% endif %}
         </section>
 
         <!-- ========== Tools ========== -->
